@@ -1,7 +1,6 @@
 import express from "express";
 import userRepository from "../repositories/UserRepository.js";
 import {z} from "zod";
-import UserRepository from "../repositories/UserRepository.js";
 
 ;
 const router = express.Router();
@@ -14,7 +13,7 @@ const UserRegisterSchema = z.object({
 
 router.get("/", async (req, res) => {
   const users = await userRepository.getUsers();
-  res.json(users)
+  res.json(users);
 });
 
 router.get("/:id", async (req, res) => {
@@ -24,6 +23,12 @@ router.get("/:id", async (req, res) => {
     return res.status(404).send("User not found");
   }
   res.json(user);
+})
+
+router.get("/:idGroup", async (req, res) => {
+  const {idGroup} = req.params;
+  const users = await userRepository.getUsersByGroup(idGroup);
+  res.json(users);
 })
 
 router.post("/register", async (req, res) => {
@@ -40,7 +45,7 @@ router.put("/:id", async (req, res) => {
   const {id} = req.params;
   const userToUpdate = await userRepository.getUserById(id);
   if (userToUpdate) {
-    await UserRepository.updateUser(id, req.body)
+    await userRepository.updateUser(id, req.body)
   } else {
     return res.status(404).send("User not found");
   }
@@ -50,7 +55,7 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const {id} = req.params;
-  await UserRepository.deleteUser(id);
+  await userRepository.deleteUser(id);
   res.status(204).send("User deleted")
 })
 

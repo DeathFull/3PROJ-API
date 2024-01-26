@@ -1,4 +1,5 @@
 import {UserModel} from "../models/UserModel.js";
+import groupRepository from "./GroupRepository.js";
 
 
 class UserRepository {
@@ -16,6 +17,16 @@ class UserRepository {
 
   async getUserById(id) {
     return await UserModel.findById(id);
+  }
+
+  async getUsersByGroup(idGroup){
+    const group =await  groupRepository.getGroupById(idGroup);
+    const users = [];
+    for (const member of group.members){
+      const user = await UserModel.findById(member);
+      users.push(user);
+    }
+    return users;
   }
 
   async updateUser(id, payload) {
