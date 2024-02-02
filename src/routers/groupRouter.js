@@ -26,11 +26,10 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const {id} = req.params;
   const groupToUpdate = await groupRepository.getGroupById(id);
-  if (groupToUpdate) {
-    await groupRepository.updateGroup(id, req.body)
-  } else {
+  if (!groupToUpdate) {
     return res.status(404).send("Group not found");
   }
+  await groupRepository.updateGroup(id, req.body)
   res.status(200).send("Group updated");
 })
 

@@ -44,11 +44,10 @@ router.post("/login", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const {id} = req.params;
   const userToUpdate = await userRepository.getUserById(id);
-  if (userToUpdate) {
-    await userRepository.updateUser(id, req.body)
-  } else {
+  if (!userToUpdate) {
     return res.status(404).send("User not found");
   }
+  await userRepository.updateUser(id, req.body)
   res.status(200).send("User updated");
 })
 
