@@ -1,6 +1,5 @@
-import {UserModel} from "../models/UserModel.js";
+import { UserModel } from "../models/UserModel.js";
 import groupRepository from "./GroupRepository.js";
-
 
 class UserRepository {
   async getUsers() {
@@ -10,19 +9,19 @@ class UserRepository {
         firstname: true,
         lastname: true,
         email: true,
-      }
+      },
     );
-    return users
+    return users;
   }
 
   async getUserById(id) {
     return await UserModel.findById(id);
   }
 
-  async getUsersByGroup(idGroup){
-    const group =await  groupRepository.getGroupById(idGroup);
+  async getUsersByGroup(idGroup) {
+    const group = await groupRepository.getGroupById(idGroup);
     const users = [];
-    for (const member of group.members){
+    for (const member of group.members) {
       const user = await UserModel.findById(member);
       users.push(user);
     }
@@ -34,14 +33,20 @@ class UserRepository {
       {
         _id: id,
       },
-      payload
+      payload,
     );
 
-    return newUser
+    return newUser;
   }
 
   async deleteUser(id) {
-    await UserModel.deleteOne({_id: id});
+    await UserModel.deleteOne({ _id: id });
+  }
+
+  async createUser(payload) {
+    const newUser = new UserModel(payload);
+    await newUser.save();
+    return newUser;
   }
 }
 

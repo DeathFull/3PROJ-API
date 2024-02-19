@@ -1,12 +1,16 @@
 import express from "express";
 import userRepository from "../repositories/UserRepository.js";
 import { z } from "zod";
+import { UserModel } from "../models/UserModel.js";
+import passport from "passport";
 
 const userRouter = express.Router();
 
 const UserRegisterSchema = z.object({
-  name: z.string(),
+  firstname: z.string(),
+  lastname: z.string(),
   email: z.string().email(),
+  username: z.string(),
   password: z.string().min(6),
 });
 
@@ -30,9 +34,64 @@ userRouter.get("/:idGroup", async (req, res) => {
   res.json(users);
 });
 
-userRouter.post("/register", async (req, res) => {});
+userRouter.post("/register", async (req, res) => {
+  let validation;
+  try {
+    validation = UserRegisterSchema.parse(req.body);
+  } catch (e) {
+    return res.status(400).send(e.errmsg);
+  }
 
-userRouter.post("/login", async (req, res) => {});
+  console.log(validation);
+
+  const { firstname, lastname, email, username, password } = validation;
+  UserModel.register(
+    new UserModel({ firstname, lastname, email, username }),
+    password,
+    (err, user) => {
+      if (err) {
+        return res.status(500).send(err.message);
+      }
+
+      passport.authenticate("local")(req, res, () => {
+        res.status(201).json({
+          message: "Successfully registered user",
+          user: user.project({
+            _id: 1,
+            username: 1,
+            email: 1,
+            lastname: 1,
+            firstname: 1,
+          }),
+        });
+      });
+    },
+  );
+});
+
+userRouter.post("/login", async (req, res) => {
+  const user = new UserModel({
+    username: req.body.username,
+    password: req.body.password,
+  });
+
+  req.login(user, (err) => {
+    if (err) {
+      return res.status(500).send(err.message);
+    }
+
+    passport.authenticate("local")(
+      req,
+      res,
+      () => {
+        res.status(201).json({ message: "Successfully logged in" });
+      },
+      (err) => {
+        res.status(401).send(err.content);
+      },
+    );
+  });
+});
 
 userRouter.put("/:id", async (req, res) => {
   const { id } = req.params;

@@ -28,7 +28,9 @@
     "/users": {
       "get": {
         "summary": "Get all users",
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "responses": {
           "200": {
             "description": "A list of users",
@@ -44,17 +46,69 @@
             }
           }
         }
-      },
+      }
+    },
+    "/users/register": {
       "post": {
         "summary": "Create a new user",
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegister"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "User created",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/UserRegister"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "Login a user",
+        "tags": [
+          "users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLogin"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLogin"
                 }
               }
             }
@@ -65,7 +119,9 @@
     "/groups": {
       "get": {
         "summary": "Get all groups",
-        "tags": ["groups"],
+        "tags": [
+          "groups"
+        ],
         "responses": {
           "200": {
             "description": "A list of groups",
@@ -84,7 +140,9 @@
       },
       "post": {
         "summary": "Create a new group",
-        "tags": ["groups"],
+        "tags": [
+          "groups"
+        ],
         "responses": {
           "201": {
             "description": "Group created",
@@ -102,7 +160,9 @@
     "/balances": {
       "get": {
         "summary": "Get all balances",
-        "tags": ["balances"],
+        "tags": [
+          "balances"
+        ],
         "responses": {
           "200": {
             "description": "A list of balances",
@@ -121,7 +181,9 @@
       },
       "post": {
         "summary": "Create a new balance",
-        "tags": ["balances"],
+        "tags": [
+          "balances"
+        ],
         "responses": {
           "201": {
             "description": "Balance created",
@@ -150,6 +212,44 @@
           },
           "email": {
             "type": "string"
+          }
+        }
+      },
+      "UserRegister": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string",
+            "required": true
+          },
+          "lastname": {
+            "type": "string",
+            "required": true
+          },
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "username": {
+            "type": "string",
+            "required": true
+          },
+          "password": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "required": true
+          },
+          "password": {
+            "type": "string",
+            "required": true
           }
         }
       },

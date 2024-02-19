@@ -4,10 +4,25 @@ import groupRouter from "./routers/groupRouter.js";
 import balanceRouter from "./routers/balanceRouter.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
+import passport from "passport";
+import { UserModel } from "./models/UserModel.js";
+import session from "express-session";
 
 const app = express();
 
 app.use(express.json({ limit: "16mb" }));
+app.use(
+  session({
+    secret: "the super secret key",
+    resave: false,
+    saveUninitialized: false,
+  }),
+);
+app.use(passport.initialize());
+app.use(passport.session({}));
+passport.use(UserModel.createStrategy());
+passport.serializeUser(UserModel.serializeUser());
+passport.deserializeUser(UserModel.deserializeUser());
 
 app.get("/", (req, res) => {
   res.status(200).send("Bienvenue sur l'API UniFinance");
