@@ -1,14 +1,14 @@
 import express from "express";
 import balanceRepository from "../repositories/balanceRepository.js";
 
-const router = express();
+const balanceRouter = express.Router();
 
-router.get("/", async (req, res) => {
+balanceRouter.get("/", async (req, res) => {
   const balances = await balanceRepository.getBalances();
   res.json(balances);
 })
 
-router.get("/:id", async (req, res) => {
+balanceRouter.get("/:id", async (req, res) => {
   const {id} = req.params;
   const balance = await balanceRepository.getBalanceById(id)
   if (!balance) {
@@ -17,12 +17,12 @@ router.get("/:id", async (req, res) => {
   res.json(balance);
 })
 
-router.post("/", async (req, res) => {
+balanceRouter.post("/", async (req, res) => {
   const balance = await balanceRepository.createBalance(req.body);
   res.status(201).json(balance);
 })
 
-router.put("/:id", async (req, res) => {
+balanceRouter.put("/:id", async (req, res) => {
   const {id, payload} = req.params;
   const balanceToUpdate = await balanceRepository.getBalanceById(id);
   if (!balanceToUpdate) {
@@ -32,8 +32,10 @@ router.put("/:id", async (req, res) => {
   res.status(200).send("Balance updated")
 })
 
-router.delete("/:id", async (req, res) => {
+balanceRouter.delete("/:id", async (req, res) => {
   const {id} = req.params;
   await balanceRepository.deleteBalance(id);
   res.status(204).send("Balance deleted")
 })
+
+export default balanceRouter;

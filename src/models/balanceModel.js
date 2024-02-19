@@ -1,9 +1,13 @@
-import mongoose, {Mongoose} from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 const BalanceSchema = new mongoose.Schema({
-  idUser: {type: Mongoose.Schema.Types.ObjectId, require: true, ref: "User"},
-  idGroup: {type: Mongoose.SChema.Type.ObjectId, require: true, ref: "Group"},
-  balance: {type: Number, require: true}
+  idUser: { type: Types.ObjectId, require: true, ref: "User" },
+  idGroup: {
+    type: Types.ObjectId,
+    require: true,
+    ref: "Group",
+  },
+  balance: { type: Number, require: true },
 });
 
-export const BalanceModel = mongoose.model("Balance", BalanceSchema)
+export const BalanceModel = mongoose.model("Balance", BalanceSchema);
