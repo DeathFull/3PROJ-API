@@ -1,4 +1,5 @@
 import {GroupModel} from "../models/GroupModel.js";
+import UserRepository from "./UserRepository.js";
 
 class GroupRepository {
   async getGroups() {
@@ -11,6 +12,15 @@ class GroupRepository {
 
   async getGroupById(id) {
     return await GroupModel.findById(id)
+  }
+
+  async getGroupsByUser(idUser) {
+    const groups = await GroupModel.find({
+      members: {
+        $in: [idUser]
+      }
+    });
+    return groups;
   }
 
   async createGroup(payload) {
@@ -26,6 +36,42 @@ class GroupRepository {
     );
 
     return newGroup;
+  }
+
+  async addUserToGroup(id, idUser) {
+    const groupWithNewMember = await GroupModel.findOneAndUpdate(
+      {
+        _id: id
+      },
+      {
+        $push: {
+          members: idUser
+        }
+      },
+      {
+        new: true
+      }
+    );
+    return groupWithNewMember;
+  }
+
+
+  async removeUserFromGroup(id, idUser) {
+    const groupWithoutMember = await GroupModel.findOneAndUpdate(
+      {
+        _id: id
+      },
+      {
+        $pull: {
+          members: idUser
+
+        }
+      },
+      {
+        new: true
+      }
+    );
+    return groupWithoutMember;
   }
 
   async deleteGroup(id) {
