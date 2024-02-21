@@ -89,9 +89,7 @@ userRouter.post("/login", async (req, res) => {
       () => {
         jwt.sign(
           {
-            data: {
-              user: user._id,
-            },
+            user: user._id,
           },
           process.env.JWT_SECRET,
           { expiresIn: "2h" },
