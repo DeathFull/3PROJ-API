@@ -3,6 +3,7 @@ import userRepository from "../repositories/UserRepository.js";
 import { z } from "zod";
 import { UserModel } from "../models/UserModel.js";
 import passport from "passport";
+import jwt from "jsonwebtoken";
 
 const userRouter = express.Router();
 
@@ -54,16 +55,18 @@ userRouter.post("/register", async (req, res) => {
       }
 
       passport.authenticate("local")(req, res, () => {
-        res.status(201).json({
-          message: "Successfully registered user",
-          user: user.project({
-            _id: 1,
-            username: 1,
-            email: 1,
-            lastname: 1,
-            firstname: 1,
-          }),
-        });
+        jwt.sign(
+          {
+            data: {
+              user: user._id,
+            },
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "2h" },
+          (err, token) => {
+            return res.status(201).json({ token });
+          },
+        );
       });
     },
   );
@@ -84,10 +87,21 @@ userRouter.post("/login", async (req, res) => {
       req,
       res,
       () => {
-        res.status(201).json({ message: "Successfully logged in" });
+        jwt.sign(
+          {
+            data: {
+              user: user._id,
+            },
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "2h" },
+          (err, token) => {
+            return res.status(201).json({ token });
+          },
+        );
       },
       (err) => {
-        res.status(401).send(err.content);
+        return res.status(401).send(err.content);
       },
     );
   });
