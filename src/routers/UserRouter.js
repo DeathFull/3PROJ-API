@@ -94,6 +94,7 @@ userRouter.post("/login", async (req, res) => {
           process.env.JWT_SECRET,
           { expiresIn: "2h" },
           (err, token) => {
+            localStorage.setItem("token", token);
             return res.status(201).json({ token });
           },
         );
