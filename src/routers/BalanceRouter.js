@@ -1,5 +1,5 @@
 import express from "express";
-import balanceRepository from "../repositories/balanceRepository.js";
+import balanceRepository from "../repositories/BalanceRepository.js";
 
 const balanceRouter = express.Router();
 
@@ -15,6 +15,16 @@ balanceRouter.get("/:id", async (req, res) => {
     res.status(404).send("Balance not found");
   }
   res.json(balance);
+})
+
+
+balanceRouter.get("/:idUser", async (req, res) => {
+  const {idUser} = req.params;
+  const balances = await balanceRepository.getBalancesByUser(idUser);
+  if (!balances) {
+    res.status(404).send("Balances not found");
+  }
+  res.json(balances);
 })
 
 balanceRouter.post("/", async (req, res) => {
