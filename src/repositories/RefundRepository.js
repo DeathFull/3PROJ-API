@@ -10,7 +10,7 @@ class RefundRepository {
   }
 
   getRefundsByUser(idUser) {
-    return RefundModel.find({refunderId: idUser});
+    return RefundModel.find({refunderId: idUser}).sort({percentage: -1});
   }
 
   async createRefund(payload) {

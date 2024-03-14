@@ -2,7 +2,7 @@ import {BalanceModel} from "../models/BalanceModel.js";
 
 class BalanceRepository {
   async getBalances() {
-    return await BalanceModel.find({}, {idUser: true, idGroup: true, balance: true});
+    return await BalanceModel.find({}, {idUser: true, idGroup: true, balance: true}).sort({idUser: 1});
   }
 
   async getBalanceById(id) {

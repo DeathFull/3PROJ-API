@@ -9,7 +9,7 @@ expenseRouter.get("/", async (req, res) => {
 });
 
 expenseRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const expense = await expenseRepository.getExpenseById(id);
   if (!expense) {
     res.status(404).send("Expense not found");
@@ -18,8 +18,9 @@ expenseRouter.get("/:id", async (req, res) => {
 });
 
 expenseRouter.get("/:idUser", async (req, res) => {
-  const { idUser } = req.params;
-  const expenses = await expenseRepository.getExpensesByUser(idUser);
+  const {idUser} = req.params;
+  const {sortBy, orderBy} = req.query;
+  const expenses = await expenseRepository.getExpensesByUser(idUser,sortBy,orderBy);
   if (!expenses) {
     res.status(404).send("Expenses not found");
   }
@@ -27,7 +28,7 @@ expenseRouter.get("/:idUser", async (req, res) => {
 });
 
 expenseRouter.get("/:idGroup", async (req, res) => {
-  const { idGroup } = req.params;
+  const {idGroup} = req.params;
   const expenses = await expenseRepository.getExpensesByGroup(idGroup);
   if (!expenses) {
     res.status(404).send("Expenses not found");
@@ -36,7 +37,7 @@ expenseRouter.get("/:idGroup", async (req, res) => {
 });
 
 expenseRouter.get("/:category", async (req, res) => {
-  const { category } = req.params;
+  const {category} = req.params;
   const expenses = await expenseRepository.getExpensesByCategory(category);
   if (!expenses) {
     res.status(404).send("Expenses not found");
@@ -50,7 +51,7 @@ expenseRouter.post("/", async (req, res) => {
 });
 
 expenseRouter.put("/:id", async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const expenseToUpdate = await expenseRepository.getExpenseById(id);
   if (!expenseToUpdate) {
     res.status(404).send("Expense not found");
@@ -60,7 +61,7 @@ expenseRouter.put("/:id", async (req, res) => {
 });
 
 expenseRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   await expenseRepository.deleteExpense(id);
   res.status(204).send("Expense deleted");
 });
