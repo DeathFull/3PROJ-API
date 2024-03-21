@@ -1,12 +1,16 @@
-import {BalanceModel} from "../models/balanceModel.js";
+import {BalanceModel} from "../models/BalanceModel.js";
 
 class BalanceRepository {
   async getBalances() {
-    return await BalanceModel.find({}, {idUser: true, idGroup: true, balance: true});
+    return await BalanceModel.find({}, {idUser: true, idGroup: true, balance: true}).sort({idUser: 1});
   }
 
   async getBalanceById(id) {
     return await BalanceModel.findById(id);
+  }
+
+  getBalancesByUser(idUser) {
+    return BalanceModel.find({idUser: idUser});
   }
 
   async createBalance(payload) {

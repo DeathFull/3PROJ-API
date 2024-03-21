@@ -1,7 +1,8 @@
 import express from "express";
 import userRouter from "./routers/userRouter.js";
-import groupRouter from "./routers/groupRouter.js";
-import balanceRouter from "./routers/balanceRouter.js";
+import groupRouter from "./routers/GroupRouter.js";
+import balanceRouter from "./routers/BalanceRouter.js";
+import expenseRouter from "./routers/ExpenseRouter.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
 import passport from "passport";
@@ -31,6 +32,8 @@ app.get("/", (req, res) => {
 app.use("/users", userRouter);
 app.use("/groups", groupRouter);
 app.use("/balances", balanceRouter);
+app.use("/expenses", expenseRouter);
+app.use("/refunds", refundRouter);
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 export default app;
