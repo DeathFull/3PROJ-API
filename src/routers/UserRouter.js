@@ -105,6 +105,8 @@ userRouter.post("/login", async (req, res) => {
   });
 });
 
+userRouter.get("/login/google", (req, res) => {});
+
 userRouter.put("/:id", async (req, res) => {
   const { id } = req.params;
   const userToUpdate = await userRepository.getUserById(id);

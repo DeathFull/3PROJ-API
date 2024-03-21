@@ -8,6 +8,7 @@ import swaggerDocument from "./swagger.json" assert { type: "json" };
 import passport from "passport";
 import { UserModel } from "./models/UserModel.js";
 import session from "express-session";
+import refundRouter from "./routers/RefundRouter.js";
 
 const app = express();
 
