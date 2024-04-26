@@ -1,18 +1,22 @@
 import express from "express";
-import userRouter from "./routers/userRouter.js";
+import userRouter from "./routers/UserRouter.js";
 import groupRouter from "./routers/GroupRouter.js";
 import balanceRouter from "./routers/BalanceRouter.js";
 import expenseRouter from "./routers/ExpenseRouter.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger.json" assert { type: "json" };
+import swaggerDocument from "./swagger.json" assert {type: "json"};
 import passport from "passport";
-import { UserModel } from "./models/UserModel.js";
+import {UserModel} from "./models/UserModel.js";
 import session from "express-session";
 import refundRouter from "./routers/RefundRouter.js";
+import {Strategy as GoogleStrategy} from "passport-google-oauth20";
+import UserRepository from "./repositories/UserRepository.js";
+import dotenv from "dotenv";
 
 const app = express();
 
-app.use(express.json({ limit: "16mb" }));
+dotenv.config();
+app.use(express.json({limit: "16mb"}));
 app.use(
   session({
     secret: "the super secret key",
@@ -25,6 +29,36 @@ app.use(passport.session({}));
 passport.use(UserModel.createStrategy());
 passport.serializeUser(UserModel.serializeUser());
 passport.deserializeUser(UserModel.deserializeUser());
+/*passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  UserModel.findById(id, (err, user) => {
+    done(err, user);
+  });
+});*/
+
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/users/login/google/callback",
+  },
+  async function (accessToken, refreshToken, profile, cb) {
+    console.log("before FindOrCreate")
+    try {
+      console.log("try")
+      const { name: { familyName, givenName }, emails, id } = profile;
+      const email = emails[0].value;
+      const user = await UserRepository.findOrCreate({ googleId: id, firstname: givenName, lastname: familyName, email: email });
+      return cb(null, user);
+    } catch (err) {
+      console.log(err)
+      return cb(err, null);
+    }
+  }
+));
 
 app.get("/", (req, res) => {
   res.status(200).send("Bienvenue sur l'API UniFinance");
