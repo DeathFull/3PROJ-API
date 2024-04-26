@@ -1,5 +1,5 @@
 import express from "express";
-import userRouter from "./routers/userRouter.js";
+import userRouter from "./routers/UserRouter.js";
 import groupRouter from "./routers/GroupRouter.js";
 import balanceRouter from "./routers/BalanceRouter.js";
 import expenseRouter from "./routers/ExpenseRouter.js";
