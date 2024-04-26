@@ -11,7 +11,7 @@ const UserRegisterSchema = z.object({
   firstname: z.string(),
   lastname: z.string(),
   email: z.string().email(),
-  username: z.string(),
+  // username: z.string(),
   password: z.string().min(6),
 });
 
@@ -45,9 +45,9 @@ userRouter.post("/register", async (req, res) => {
 
   console.log(validation);
 
-  const {firstname, lastname, email, username, password} = validation;
+  const {firstname, lastname, email, /*username,*/ password} = validation;
   UserModel.register(
-    new UserModel({firstname, lastname, email, username}),
+    new UserModel({firstname, lastname, email, /*username*/}),
     password,
     (err, user) => {
       if (err) {
@@ -74,7 +74,8 @@ userRouter.post("/register", async (req, res) => {
 
 userRouter.post("/login", async (req, res) => {
   const user = new UserModel({
-    username: req.body.username,
+    // username: req.body.username,
+    email: req.body.email,
     password: req.body.password,
   });
 
@@ -105,14 +106,13 @@ userRouter.post("/login", async (req, res) => {
   });
 });
 
-userRouter.get("/login/google", (req, res) => {
-  console.log("login")
+  userRouter.get("/login/google", (req, res) => {
   passport.authenticate("google", {scope: ["profile", "email"]})(req, res);
 });
 
 userRouter.get("/login/google/callback", (req, res) => {
   passport.authenticate("google", {failureRedirect: "/login"})(req, res, () => {
-    /*jwt.sign(
+    jwt.sign(
       {
         user: req.user._id,
       },
@@ -121,10 +121,7 @@ userRouter.get("/login/google/callback", (req, res) => {
       (err, token) => {
         return res.status(201).json({token});
       },
-    );*/
-    console.log("callback")
-    return res.status(200).send("Connected");
-    // res.redirect("/users");
+    );
   });
 
 });

@@ -27,17 +27,21 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session({}));
 passport.use(UserModel.createStrategy());
-passport.serializeUser(UserModel.serializeUser());
-passport.deserializeUser(UserModel.deserializeUser());
-/*passport.serializeUser((user, done) => {
+/*passport.serializeUser(UserModel.serializeUser());
+passport.deserializeUser(UserModel.deserializeUser());*/
+passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
 passport.deserializeUser((id, done) => {
-  UserModel.findById(id, (err, user) => {
-    done(err, user);
-  });
-});*/
+  UserModel.findById(id)
+    .then(user => {
+      done(null, user);
+    })
+    .catch(err => {
+      done(err, null);
+    });
+});
 
 
 passport.use(new GoogleStrategy({
@@ -46,15 +50,12 @@ passport.use(new GoogleStrategy({
     callbackURL: "http://localhost:3000/users/login/google/callback",
   },
   async function (accessToken, refreshToken, profile, cb) {
-    console.log("before FindOrCreate")
     try {
-      console.log("try")
       const { name: { familyName, givenName }, emails, id } = profile;
       const email = emails[0].value;
       const user = await UserRepository.findOrCreate({ googleId: id, firstname: givenName, lastname: familyName, email: email });
       return cb(null, user);
     } catch (err) {
-      console.log(err)
       return cb(err, null);
     }
   }

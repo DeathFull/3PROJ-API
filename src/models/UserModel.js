@@ -8,6 +8,6 @@ const UserSchema = new mongoose.Schema({
   googleId: { type: String, unique: true , sparse: true},
 });
 
-UserSchema.plugin(passportLocalMongoose);
+UserSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
 
 export const UserModel = mongoose.model("User", UserSchema);
