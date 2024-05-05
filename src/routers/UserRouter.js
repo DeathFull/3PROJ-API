@@ -1,7 +1,7 @@
 import express from "express";
 import userRepository from "../repositories/UserRepository.js";
-import { z } from "zod";
-import { UserModel } from "../models/UserModel.js";
+import {z} from "zod";
+import {UserModel} from "../models/UserModel.js";
 import passport from "passport";
 import jwt from "jsonwebtoken";
 
@@ -11,7 +11,7 @@ const UserRegisterSchema = z.object({
   firstname: z.string(),
   lastname: z.string(),
   email: z.string().email(),
-  username: z.string(),
+  // username: z.string(),
   password: z.string().min(6),
 });
 
@@ -21,7 +21,7 @@ userRouter.get("/", async (req, res) => {
 });
 
 userRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const user = await userRepository.getUserById(id);
   if (!user) {
     return res.status(404).send("User not found");
@@ -30,7 +30,7 @@ userRouter.get("/:id", async (req, res) => {
 });
 
 userRouter.get("/:idGroup", async (req, res) => {
-  const { idGroup } = req.params;
+  const {idGroup} = req.params;
   const users = await userRepository.getUsersByGroup(idGroup);
   res.json(users);
 });
@@ -40,14 +40,14 @@ userRouter.post("/register", async (req, res) => {
   try {
     validation = UserRegisterSchema.parse(req.body);
   } catch (e) {
-    return res.status(400).send(e.errmsg);
+    return res.status(400).send(e);
   }
 
   console.log(validation);
 
-  const { firstname, lastname, email, username, password } = validation;
+  const {firstname, lastname, email, /*username,*/ password} = validation;
   UserModel.register(
-    new UserModel({ firstname, lastname, email, username }),
+    new UserModel({firstname, lastname, email, /*username*/}),
     password,
     (err, user) => {
       if (err) {
@@ -62,9 +62,9 @@ userRouter.post("/register", async (req, res) => {
             },
           },
           process.env.JWT_SECRET,
-          { expiresIn: "2h" },
+          {expiresIn: "2h"},
           (err, token) => {
-            return res.status(201).json({ token });
+            return res.status(201).json({token});
           },
         );
       });
@@ -74,7 +74,8 @@ userRouter.post("/register", async (req, res) => {
 
 userRouter.post("/login", async (req, res) => {
   const user = new UserModel({
-    username: req.body.username,
+    // username: req.body.username,
+    email: req.body.email,
     password: req.body.password,
   });
 
@@ -92,9 +93,9 @@ userRouter.post("/login", async (req, res) => {
             user: user._id,
           },
           process.env.JWT_SECRET,
-          { expiresIn: "2h" },
+          {expiresIn: "2h"},
           (err, token) => {
-            return res.status(201).json({ token });
+            return res.status(201).json({token});
           },
         );
       },
@@ -105,10 +106,28 @@ userRouter.post("/login", async (req, res) => {
   });
 });
 
-userRouter.get("/login/google", (req, res) => {});
+  userRouter.get("/login/google", (req, res) => {
+  passport.authenticate("google", {scope: ["profile", "email"]})(req, res);
+});
+
+userRouter.get("/login/google/callback", (req, res) => {
+  passport.authenticate("google", {failureRedirect: "/login"})(req, res, () => {
+    jwt.sign(
+      {
+        user: req.user._id,
+      },
+      process.env.JWT_SECRET,
+      {expiresIn: "2h"},
+      (err, token) => {
+        return res.status(201).json({token});
+      },
+    );
+  });
+
+});
 
 userRouter.put("/:id", async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const userToUpdate = await userRepository.getUserById(id);
   if (!userToUpdate) {
     return res.status(404).send("User not found");
@@ -118,7 +137,7 @@ userRouter.put("/:id", async (req, res) => {
 });
 
 userRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   await userRepository.deleteUser(id);
   res.status(204).send("User deleted");
 });

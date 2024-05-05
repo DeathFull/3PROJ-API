@@ -28,6 +28,18 @@ class UserRepository {
     return users;
   }
 
+
+  async findOrCreate(newUser) {
+    let user = await UserModel.findOne({ googleId: newUser.googleId });
+    const {firstname, lastname, email, googleId} = newUser;
+    if (!user) {
+      user = new UserModel({firstname, lastname, email, googleId});
+      await user.save();
+    }
+
+    return user;
+  }
+
   async updateUser(id, payload) {
     const newUser = await UserModel.findOneAndUpdate(
       {
