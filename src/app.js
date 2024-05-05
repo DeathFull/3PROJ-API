@@ -9,6 +9,7 @@ import passport from "passport";
 import { UserModel } from "./models/UserModel.js";
 import session from "express-session";
 import refundRouter from "./routers/RefundRouter.js";
+import cors from "cors";
 
 const app = express();
 
@@ -18,6 +19,11 @@ app.use(
     secret: "the super secret key",
     resave: false,
     saveUninitialized: false,
+  }),
+);
+app.use(
+  cors({
+    origin: "*",
   }),
 );
 app.use(passport.initialize());
