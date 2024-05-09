@@ -54,7 +54,7 @@ passport.use(new GoogleStrategy({
     try {
       const { name: { familyName, givenName }, emails, id } = profile;
       const email = emails[0].value;
-      const user = await UserRepository.findOrCreateGoogle({ googleId: id, firstname: givenName, lastname: familyName, email: email });
+      const user = await UserRepository.findOrCreateGoogle({ facebookId: id, firstname: givenName, lastname: familyName, email: email });
       return cb(null, user);
     } catch (err) {
       return cb(err, null);
