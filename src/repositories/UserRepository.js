@@ -29,12 +29,23 @@ class UserRepository {
   }
 
 
-  async findOrCreate(newUser) {
+  async findOrCreateGoogle(newUser) {
     let user = await UserModel.findOne({ googleId: newUser.googleId });
     const {firstname, lastname, email, googleId} = newUser;
     if (!user) {
       user = new UserModel({firstname, lastname, email, googleId});
       await user.save();
+    }
+
+    return user;
+  }
+
+  async findOrCreateFacebook(newUser) {
+    let user = UserModel.findOne({ facebookId: newUser.facebookId });
+    const {firstname, lastname, facebookId} = newUser;
+    if (!user) {
+      user = new UserModel({firstname, lastname, facebookId});
+      user.save();
     }
 
     return user;
