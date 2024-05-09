@@ -73,6 +73,9 @@ userRouter.post("/register", async (req, res) => {
 });
 
 userRouter.post("/login", async (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).send("Email and password are required");
+  }
   const user = new UserModel({
     // username: req.body.username,
     email: req.body.email,
@@ -106,12 +109,12 @@ userRouter.post("/login", async (req, res) => {
   });
 });
 
-  userRouter.get("/login/google", (req, res) => {
+userRouter.get("/login/google", (req, res) => {
   passport.authenticate("google", {scope: ["profile", "email"]})(req, res);
 });
 
 userRouter.get("/login/google/callback", (req, res) => {
-  passport.authenticate("google", {failureRedirect: "/login"})(req, res, () => {
+  passport.authenticate("google", {failureRedirect: "/"})(req, res, () => {
     jwt.sign(
       {
         user: req.user._id,
@@ -123,7 +126,23 @@ userRouter.get("/login/google/callback", (req, res) => {
       },
     );
   });
+});
 
+userRouter.get('/login/facebook', passport.authenticate('facebook'));
+
+userRouter.get("/login/facebook/callback", (req, res) => {
+  passport.authenticate("facebook", {failureRedirect: "/"})(req, res, () => {
+    jwt.sign(
+      {
+        user: req.user._id,
+      },
+      process.env.JWT_SECRET,
+      {expiresIn: "2h"},
+      (err, token) => {
+        return res.status(201).json({token});
+      },
+    );
+  });
 });
 
 userRouter.put("/:id", async (req, res) => {

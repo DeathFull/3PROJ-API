@@ -21,8 +21,6 @@ class RefundRepository {
     return await RefundModel.findOneAndUpdate({_id: id}, payload);
   }
 
-  async
-
   async deleteRefund(id) {
     return await RefundModel.deleteOne(id);
   }

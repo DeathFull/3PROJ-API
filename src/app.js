@@ -12,6 +12,7 @@ import refundRouter from "./routers/RefundRouter.js";
 import {Strategy as GoogleStrategy} from "passport-google-oauth20";
 import UserRepository from "./repositories/UserRepository.js";
 import dotenv from "dotenv";
+import {Strategy as FacebookStrategy} from "passport-facebook";
 
 const app = express();
 
@@ -47,13 +48,32 @@ passport.deserializeUser((id, done) => {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/users/login/google/callback",
+    callbackURL: "https://api.uni-finance.fr/users/login/google/callback",
   },
   async function (accessToken, refreshToken, profile, cb) {
     try {
       const { name: { familyName, givenName }, emails, id } = profile;
       const email = emails[0].value;
-      const user = await UserRepository.findOrCreate({ googleId: id, firstname: givenName, lastname: familyName, email: email });
+      const user = await UserRepository.findOrCreateGoogle({ googleId: id, firstname: givenName, lastname: familyName, email: email });
+      return cb(null, user);
+    } catch (err) {
+      return cb(err, null);
+    }
+  }
+));
+
+passport.use(new FacebookStrategy({
+    clientID: process.env.FACEBOOK_APP_ID,
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURL: "https://api.uni-finance.fr/users/login/facebook/callback",
+    profileFields: ['id', 'emails', 'name'] // Ajoutez cette ligne
+  },
+  async function (accessToken, refreshToken, profile, cb) {
+    try {
+      console.log(profile);
+      const { name: { familyName, givenName }, emails, id } = profile;
+      const email = emails[0].value; // L'e-mail est maintenant disponible ici
+      const user = await UserRepository.findOrCreateFacebook({ facebookId: id, firstname: givenName, lastname: familyName, email: email });
       return cb(null, user);
     } catch (err) {
       return cb(err, null);
