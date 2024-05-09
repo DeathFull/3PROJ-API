@@ -3,7 +3,7 @@ import groupRouter from "./routers/GroupRouter.js";
 import balanceRouter from "./routers/BalanceRouter.js";
 import expenseRouter from "./routers/ExpenseRouter.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger.json" assert { type: "json" };
+import swaggerDocument from "./swagger.json" with { type: "json" };
 import passport from "passport";
 import { UserModel } from "./models/UserModel.js";
 import session from "express-session";
