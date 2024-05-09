@@ -3,9 +3,9 @@ import groupRouter from "./routers/GroupRouter.js";
 import balanceRouter from "./routers/BalanceRouter.js";
 import expenseRouter from "./routers/ExpenseRouter.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger.json" with { type: "json" };
+import swaggerDocument from "./swagger.json" with {type: "json"};
 import passport from "passport";
-import { UserModel } from "./models/UserModel.js";
+import {UserModel} from "./models/UserModel.js";
 import session from "express-session";
 import refundRouter from "./routers/RefundRouter.js";
 import userRouter from "./routers/UserRouter.js";
@@ -18,11 +18,11 @@ import {Strategy as FacebookStrategy} from "passport-facebook";
 const app = express();
 
 dotenv.config();
-app.use(express.json({ limit: "16mb" }));
+app.use(express.json({limit: "16mb"}));
 app.use(
-    cors({
-        origin: "*",
-    }),
+  cors({
+    origin: "*",
+  }),
 );
 app.use(
   session({
@@ -57,9 +57,14 @@ passport.use(new GoogleStrategy({
   },
   async function (accessToken, refreshToken, profile, cb) {
     try {
-      const { name: { familyName, givenName }, emails, id } = profile;
+      const {name: {familyName, givenName}, emails, id} = profile;
       const email = emails[0].value;
-      const user = await UserRepository.findOrCreateGoogle({ facebookId: id, firstname: givenName, lastname: familyName, email: email });
+      const user = await UserRepository.findOrCreateGoogle({
+        googleId: id,
+        firstname: givenName,
+        lastname: familyName,
+        email: email
+      });
       return cb(null, user);
     } catch (err) {
       return cb(err, null);
@@ -75,10 +80,14 @@ passport.use(new FacebookStrategy({
   },
   async function (accessToken, refreshToken, profile, cb) {
     try {
-      console.log(profile);
-      const { name: { familyName, givenName }, emails, id } = profile;
-      const email = emails[0].value; // L'e-mail est maintenant disponible ici
-      const user = await UserRepository.findOrCreateFacebook({ facebookId: id, firstname: givenName, lastname: familyName, email: email });
+      const {name: {familyName, givenName}, emails, id} = profile;
+      const email = emails[0].value;
+      const user = await UserRepository.findOrCreateFacebook({
+        facebookId: id,
+        firstname: givenName,
+        lastname: familyName,
+        email: email
+      });
       return cb(null, user);
     } catch (err) {
       return cb(err, null);

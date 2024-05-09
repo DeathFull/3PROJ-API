@@ -1,4 +1,4 @@
-import { UserModel } from "../models/UserModel.js";
+import {UserModel} from "../models/UserModel.js";
 import groupRepository from "./GroupRepository.js";
 
 class UserRepository {
@@ -18,6 +18,10 @@ class UserRepository {
     return await UserModel.findById(id);
   }
 
+  async getUserByEmail(email) {
+    return UserModel.findOne({email: email});
+  }
+
   async getUsersByGroup(idGroup) {
     const group = await groupRepository.getGroupById(idGroup);
     const users = [];
@@ -30,23 +34,39 @@ class UserRepository {
 
 
   async findOrCreateGoogle(newUser) {
-    let user = await UserModel.findOne({ googleId: newUser.googleId });
-    const {firstname, lastname, email, googleId} = newUser;
+    const {firstname, lastname, googleId, email} = newUser;
+    let user = await UserModel.findOne({
+      $or: [
+        {email: email},
+        {googleId: googleId}
+      ]
+    });
+
     if (!user) {
       user = new UserModel({firstname, lastname, email, googleId});
-      await user.save();
+    } else if (user.email === email && !user.googleId) {
+      user.googleId = googleId;
     }
+    await user.save();
 
     return user;
   }
 
   async findOrCreateFacebook(newUser) {
-    let user = UserModel.findOne({ facebookId: newUser.facebookId });
-    const {firstname, lastname, facebookId} = newUser;
+    const {firstname, lastname, facebookId, email} = newUser;
+    let user = await UserModel.findOne({
+      $or: [
+        {email: email},
+        {facebookId: facebookId}
+      ]
+    });
+
     if (!user) {
-      user = new UserModel({firstname, lastname, facebookId});
-      user.save();
+      user = new UserModel({firstname, lastname, email, facebookId});
+    } else if (user.email === email && !user.facebookId) {
+      user.facebookId = facebookId;
     }
+    await user.save();
 
     return user;
   }
@@ -63,7 +83,7 @@ class UserRepository {
   }
 
   async deleteUser(id) {
-    await UserModel.deleteOne({ _id: id });
+    await UserModel.deleteOne({_id: id});
   }
 
   async createUser(payload) {
