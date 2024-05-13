@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export function loginMiddleware(res, req, next) {
-  const token = localStorage.getItem("token");
+  const token = window.localStorage.getItem("token");
 
   if (token === null || !token) {
     return res.status(401).json("no token provided");
