@@ -1,7 +1,10 @@
 import jwt from "jsonwebtoken";
 
-export function loginMiddleware(res, req, next) {
-  const token = window.localStorage.getItem("token");
+export function loginMiddleware(req, res, next) {
+  if (req.headers.authorization === undefined)
+    return res.status(401).json("no authorization header provided");
+
+  const token = req.headers.authorization.split(" ")[1];
 
   if (token === null || !token) {
     return res.status(401).json("no token provided");
