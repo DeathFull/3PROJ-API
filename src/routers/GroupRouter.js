@@ -27,40 +27,56 @@ groupRouter.get("/:idUser", async (req, res) => {
 });
 
 groupRouter.post("/", async (req, res) => {
-  const group = await groupRepository.createGroup(req.body);
-  res.status(201).json(group);
+  try {
+    const group = await groupRepository.createGroup(req.body);
+    res.status(201).json(group);
+  } catch (e) {
+    return res.status(400).send(e);
+  }
 });
 
 groupRouter.put("/:id", async (req, res) => {
-  const {id} = req.params;
-  const groupToUpdate = await groupRepository.getGroupById(id);
-  if (!groupToUpdate) {
-    return res.status(404).send("Group not found");
+  try {
+    const {id} = req.params;
+    const groupToUpdate = await groupRepository.getGroupById(id);
+    if (!groupToUpdate) {
+      return res.status(404).send("Group not found");
+    }
+    await groupRepository.updateGroup(id, req.body);
+    res.status(200).send("Group updated");
+  } catch (e) {
+    return res.status(400).send(e);
   }
-  await groupRepository.updateGroup(id, req.body);
-  res.status(200).send("Group updated");
 });
 
 groupRouter.put("/:id/addUser", async (req, res) => {
-  const {id} = req.params;
-  const {idUser} = req.body;
-  const groupToUpdate = await groupRepository.getGroupById(id);
-  if (!groupToUpdate) {
-    return res.status(404).send("Group not found");
+  try {
+    const {id} = req.params;
+    const {idUser} = req.body;
+    const groupToUpdate = await groupRepository.getGroupById(id);
+    if (!groupToUpdate) {
+      return res.status(404).send("Group not found");
+    }
+    await groupRepository.addUserToGroup(id, idUser);
+    res.status(200).send("User added to group");
+  } catch (e) {
+    return res.status(400).send(e);
   }
-  await groupRepository.addUserToGroup(id, idUser);
-  res.status(200).send("User added to group");
 });
 
 groupRouter.put("/:id/removeUser", async (req, res) => {
-  const {id} = req.params;
-  const {idUser} = req.body;
-  const groupToUpdate = await groupRepository.getGroupById(id);
-  if (!groupToUpdate) {
-    return res.status(404).send("Group not found");
+  try {
+    const {id} = req.params;
+    const {idUser} = req.body;
+    const groupToUpdate = await groupRepository.getGroupById(id);
+    if (!groupToUpdate) {
+      return res.status(404).send("Group not found");
+    }
+    await groupRepository.removeUserFromGroup(id, idUser);
+    res.status(200).send("User removed from group");
+  } catch (e) {
+    return res.status(400).send(e)
   }
-  await groupRepository.removeUserFromGroup(id, idUser);
-  res.status(200).send("User removed from group");
 });
 
 

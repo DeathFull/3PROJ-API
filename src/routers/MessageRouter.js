@@ -19,18 +19,26 @@ messageRouter.get("/:id", async (req, res) => {
 })
 
 messageRouter.post("/", async (req, res) => {
-  const message = await messageRepository.createMessage(req.body);
-  res.status(201).json(message);
+  try {
+    const message = await messageRepository.createMessage(req.body);
+    res.status(201).json(message);
+  } catch (e) {
+    return res.status(400).send(e);
+  }
 })
 
 messageRouter.put("/:id", async (req, res) => {
-  const {id} = req.params;
-  const messageToUpdate = await messageRepository.getMessageById(id);
-  if (!messageToUpdate) {
-    return res.status(404).send("Message not found");
+  try {
+    const {id} = req.params;
+    const messageToUpdate = await messageRepository.getMessageById(id);
+    if (!messageToUpdate) {
+      return res.status(404).send("Message not found");
+    }
+    await messageRepository.updateMessage(id, req.body)
+    res.status(200).send("Message updated")
+  } catch (e) {
+    return res.status(400).send(e);
   }
-  await messageRepository.updateMessage(id, req.body)
-  res.status(200).send("Message updated")
 })
 
 messageRouter.delete("/:id", async (req, res) => {
