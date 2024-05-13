@@ -17,7 +17,7 @@ const UserRegisterSchema = z.object({
 });
 
 userRouter.get("/", loginMiddleware, async (req, res) => {
-  const account = await userRepository.getUserById(req.user._id);
+  const account = await userRepository.getUserById(req.user);
   res.json(account);
 });
 
@@ -83,11 +83,9 @@ userRouter.post("/login", async (req, res) => {
     if (!req.body.email || !req.body.password) {
       return res.status(400).send("Email and password are required");
     }
-    const user = new UserModel({
-      // username: req.body.username,
+    const user = await UserModel.findOne({
       email: req.body.email,
-      password: req.body.password,
-    });
+    }).exec();
 
     req.login(user, (err) => {
       if (err) {

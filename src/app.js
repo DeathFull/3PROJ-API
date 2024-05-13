@@ -37,7 +37,7 @@ passport.use(UserModel.createStrategy());
 /*passport.serializeUser(UserModel.serializeUser());
 passport.deserializeUser(UserModel.deserializeUser());*/
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user._id);
 });
 
 passport.deserializeUser((id, done) => {
