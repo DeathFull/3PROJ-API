@@ -9,40 +9,48 @@ refundRouter.get("/", async (req, res) => {
 });
 
 refundRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const refund = await refundRepository.getRefundById(id);
-  if(!refund) {
+  if (!refund) {
     res.status(404).send("Refund not found");
   }
   res.json(refund);
 });
 
 refundRouter.get("/:idUser", async (req, res) => {
-  const { idUser } = req.params;
+  const {idUser} = req.params;
   const refunds = await refundRepository.getRefundsByUser(idUser);
-  if(!refunds) {
+  if (!refunds) {
     res.status(404).send("Refunds not found");
   }
   res.json(refunds);
 });
 
 refundRouter.post("/", async (req, res) => {
-  const refund = await refundRepository.createRefund(req.body);
-  res.status(201).json(refund);
+  try {
+    const refund = await refundRepository.createRefund(req.body);
+    res.status(201).json(refund);
+  } catch (e) {
+    return res.status(400).send(e);
+  }
 });
 
 refundRouter.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const refundToUpdate = await refundRepository.getRefundById(id);
-  if(!refundToUpdate) {
-    res.status(404).send("Refund not found");
+  try {
+    const {id} = req.params;
+    const refundToUpdate = await refundRepository.getRefundById(id);
+    if (!refundToUpdate) {
+      res.status(404).send("Refund not found");
+    }
+    await refundRepository.updateRefund(id, req.body);
+    res.status(200).send("Refund updated");
+  } catch (e) {
+    return res.status(400).send(e);
   }
-  await refundRepository.updateRefund(id, req.body);
-  res.status(200).send("Refund updated");
 });
 
 refundRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   await refundRepository.deleteRefund(id);
   res.status(204).send("Refund deleted");
 });

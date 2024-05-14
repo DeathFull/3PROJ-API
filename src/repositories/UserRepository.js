@@ -1,5 +1,6 @@
 import {UserModel} from "../models/UserModel.js";
 import groupRepository from "./GroupRepository.js";
+import {Types} from "mongoose";
 
 class UserRepository {
   async getUsers() {

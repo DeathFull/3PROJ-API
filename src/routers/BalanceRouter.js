@@ -28,18 +28,26 @@ balanceRouter.get("/:idUser", async (req, res) => {
 })
 
 balanceRouter.post("/", async (req, res) => {
-  const balance = await balanceRepository.createBalance(req.body);
-  res.status(201).json(balance);
+  try {
+    const balance = await balanceRepository.createBalance(req.body);
+    res.status(201).json(balance);
+  } catch (e) {
+    return res.status(400).send(e);
+  }
 })
 
 balanceRouter.put("/:id", async (req, res) => {
-  const {id, payload} = req.params;
-  const balanceToUpdate = await balanceRepository.getBalanceById(id);
-  if (!balanceToUpdate) {
-    return res.status(404).send("Balance not found");
+  try {
+    const {id, payload} = req.params;
+    const balanceToUpdate = await balanceRepository.getBalanceById(id);
+    if (!balanceToUpdate) {
+      return res.status(404).send("Balance not found");
+    }
+    await balanceRepository.updateBalance(id, req.body)
+    res.status(200).send("Balance updated")
+  } catch (e) {
+    return res.status(400).send(e);
   }
-  await balanceRepository.updateBalance(id, req.body)
-  res.status(200).send("Balance updated")
 })
 
 balanceRouter.delete("/:id", async (req, res) => {

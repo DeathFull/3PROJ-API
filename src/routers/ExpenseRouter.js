@@ -20,7 +20,7 @@ expenseRouter.get("/:id", async (req, res) => {
 expenseRouter.get("/:idUser", async (req, res) => {
   const {idUser} = req.params;
   const {sortBy, orderBy} = req.query;
-  const expenses = await expenseRepository.getExpensesByUser(idUser,sortBy,orderBy);
+  const expenses = await expenseRepository.getExpensesByUser(idUser, sortBy, orderBy);
   if (!expenses) {
     res.status(404).send("Expenses not found");
   }
@@ -46,18 +46,26 @@ expenseRouter.get("/:category", async (req, res) => {
 });
 
 expenseRouter.post("/", async (req, res) => {
-  const expense = await expenseRepository.createExpense(req.body);
-  res.status(201).json(expense);
+  try {
+    const expense = await expenseRepository.createExpense(req.body);
+    res.status(201).json(expense);
+  } catch (e) {
+    return res.status(400).send(e);
+  }
 });
 
 expenseRouter.put("/:id", async (req, res) => {
-  const {id} = req.params;
-  const expenseToUpdate = await expenseRepository.getExpenseById(id);
-  if (!expenseToUpdate) {
-    res.status(404).send("Expense not found");
+  try {
+    const {id} = req.params;
+    const expenseToUpdate = await expenseRepository.getExpenseById(id);
+    if (!expenseToUpdate) {
+      res.status(404).send("Expense not found");
+    }
+    await expenseRepository.updateExpense(id, req.body);
+    res.status(200).send("Expense updated");
+  } catch (e) {
+    return res.status(400).send(e);
   }
-  await expenseRepository.updateExpense(id, req.body);
-  res.status(200).send("Expense updated");
 });
 
 expenseRouter.delete("/:id", async (req, res) => {
