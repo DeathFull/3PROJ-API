@@ -5,6 +5,7 @@ import {UserModel} from "../models/UserModel.js";
 import passport from "passport";
 import jwt from "jsonwebtoken";
 import {loginMiddleware} from "../middlewares/loginMiddleware.js";
+import mongoose from "mongoose";
 
 const userRouter = express.Router();
 
