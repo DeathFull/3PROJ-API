@@ -1,5 +1,6 @@
 import express from "express";
 import groupRepository from "../repositories/GroupRepository.js";
+import userRepository from "../repositories/UserRepository.js";
 
 const groupRouter = express.Router();
 
@@ -9,7 +10,7 @@ groupRouter.get("/", async (req, res) => {
 });
 
 groupRouter.get("/:id", async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const group = await groupRepository.getGroupById(id);
   if (!group) {
     return res.status(404).send("Group not found");
@@ -17,13 +18,10 @@ groupRouter.get("/:id", async (req, res) => {
   res.json(group);
 });
 
-groupRouter.get("/:idUser", async (req, res) => {
-  const {idUser} = req.params;
-  const groups = await groupRepository.getGroupsByUser(idUser);
-  if (!groups) {
-    return res.status(404).send("Groups not found");
-  }
-  res.json(groups);
+groupRouter.get("/:id/users", async (req, res) => {
+  const { id } = req.params;
+  const users = await userRepository.getUsersByGroup(id);
+  res.json(users);
 });
 
 groupRouter.post("/", async (req, res) => {
@@ -37,7 +35,7 @@ groupRouter.post("/", async (req, res) => {
 
 groupRouter.put("/:id", async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const groupToUpdate = await groupRepository.getGroupById(id);
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");
@@ -51,8 +49,8 @@ groupRouter.put("/:id", async (req, res) => {
 
 groupRouter.put("/:id/addUser", async (req, res) => {
   try {
-    const {id} = req.params;
-    const {idUser} = req.body;
+    const { id } = req.params;
+    const { idUser } = req.body;
     const groupToUpdate = await groupRepository.getGroupById(id);
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");
@@ -66,8 +64,8 @@ groupRouter.put("/:id/addUser", async (req, res) => {
 
 groupRouter.put("/:id/removeUser", async (req, res) => {
   try {
-    const {id} = req.params;
-    const {idUser} = req.body;
+    const { id } = req.params;
+    const { idUser } = req.body;
     const groupToUpdate = await groupRepository.getGroupById(id);
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");
@@ -75,13 +73,12 @@ groupRouter.put("/:id/removeUser", async (req, res) => {
     await groupRepository.removeUserFromGroup(id, idUser);
     res.status(200).send("User removed from group");
   } catch (e) {
-    return res.status(400).send(e)
+    return res.status(400).send(e);
   }
 });
 
-
 groupRouter.delete("/:id", async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   await groupRepository.deleteGroup(id);
   res.status(204).send("Group deleted");
 });

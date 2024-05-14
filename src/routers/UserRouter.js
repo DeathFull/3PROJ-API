@@ -6,6 +6,7 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 import { loginMiddleware } from "../middlewares/loginMiddleware.js";
 import mongoose from "mongoose";
+import groupRepository from "../repositories/GroupRepository.js";
 
 const userRouter = express.Router();
 
@@ -50,10 +51,22 @@ userRouter.get("/:id", async (req, res) => {
   res.json(user);
 });
 
-userRouter.get("/:idGroup", async (req, res) => {
-  const { idGroup } = req.params;
-  const users = await userRepository.getUsersByGroup(idGroup);
-  res.json(users);
+userRouter.get("/groups", loginMiddleware, async (req, res) => {
+  const groups = await groupRepository.getGroupsByUser(req.user);
+  if (!groups) {
+    return res.status(404).send("Groups not found");
+  }
+  res.json(groups);
+});
+
+// TODO: À méditer
+userRouter.get("/:id/groups", async (req, res) => {
+  const { id } = req.params;
+  const groups = await groupRepository.getGroupsByUser(id);
+  if (!groups) {
+    return res.status(404).send("Groups not found");
+  }
+  res.json(groups);
 });
 
 userRouter.post("/register", async (req, res) => {
