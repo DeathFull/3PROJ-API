@@ -27,7 +27,7 @@ userRouter.get("/all", async (req, res) => {
   res.json(users);
 });
 
-userRouter.get("/email", async (req, res) => {
+userRouter.post("/email", async (req, res) => {
   const { email } = req.body;
   if (!email) {
     return res.status(400).send("Email is required");
@@ -58,7 +58,6 @@ userRouter.get("/:id", async (req, res) => {
   }
   res.json(user);
 });
-
 
 // TODO: À méditer
 userRouter.get("/:id/groups", async (req, res) => {
