@@ -12,8 +12,7 @@ const userRouter = express.Router();
 const UserRegisterSchema = z.object({
   firstname: z.string(),
   lastname: z.string(),
-  email: z.string().email(),
-  // username: z.string(),
+  email: z.string().email(), // username: z.string(),
   password: z.string().min(6),
 });
 
@@ -25,6 +24,18 @@ userRouter.get("/", loginMiddleware, async (req, res) => {
 userRouter.get("/all", async (req, res) => {
   const users = await userRepository.getUsers();
   res.json(users);
+});
+
+userRouter.get("/email", async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    res.status(400).send("Email is required");
+  }
+  const user = await userRepository.getUserByEmail(email);
+  if (!user) {
+    res.status(404).send("User not found");
+  }
+  res.json(user);
 });
 
 userRouter.get("/:id", async (req, res) => {
