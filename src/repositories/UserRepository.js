@@ -1,6 +1,5 @@
 import {UserModel} from "../models/UserModel.js";
 import groupRepository from "./GroupRepository.js";
-import {Types} from "mongoose";
 
 class UserRepository {
   async getUsers() {
@@ -35,7 +34,7 @@ class UserRepository {
 
 
   async findOrCreateGoogle(newUser) {
-    const {firstname, lastname, googleId, email} = newUser;
+    const {firstname, lastname, googleId, email, avatar} = newUser;
     let user = await UserModel.findOne({
       $or: [
         {email: email},
@@ -44,7 +43,7 @@ class UserRepository {
     });
 
     if (!user) {
-      user = new UserModel({firstname, lastname, email, googleId});
+      user = new UserModel({firstname, lastname, email, googleId, avatar});
     } else if (user.email === email && !user.googleId) {
       user.googleId = googleId;
     }
