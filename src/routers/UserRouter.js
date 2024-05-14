@@ -28,6 +28,9 @@ userRouter.get("/all", async (req, res) => {
 
 userRouter.get("/:id", async (req, res) => {
   const {id} = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid ObjectID' });
+  }
   const user = await userRepository.getUserById(id);
   if (!user) {
     return res.status(404).send("User not found");
