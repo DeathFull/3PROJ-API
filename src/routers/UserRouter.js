@@ -29,11 +29,11 @@ userRouter.get("/all", async (req, res) => {
 userRouter.get("/email", async (req, res) => {
   const { email } = req.body;
   if (!email) {
-    res.status(400).send("Email is required");
+    return res.status(400).send("Email is required");
   }
   const user = await userRepository.getUserByEmail(email);
   if (!user) {
-    res.status(404).send("User not found");
+    return res.status(404).send("User not found");
   }
   res.json(user);
 });
