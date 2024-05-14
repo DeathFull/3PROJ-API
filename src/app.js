@@ -66,13 +66,17 @@ passport.use(
           name: { familyName, givenName },
           emails,
           id,
+          photos,
         } = profile;
+        console.log(profile);
         const email = emails[0].value;
+        const avatar = photos[0].value;
         const user = await UserRepository.findOrCreateGoogle({
           googleId: id,
           firstname: givenName,
           lastname: familyName,
           email: email,
+          avatar: avatar,
         });
         return cb(null, user);
       } catch (err) {
