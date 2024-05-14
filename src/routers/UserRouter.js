@@ -27,8 +27,8 @@ userRouter.get("/all", async (req, res) => {
   res.json(users);
 });
 
-userRouter.post("/email", async (req, res) => {
-  const { email } = req.body;
+userRouter.get("/email/:email", async (req, res) => {
+  const { email } = req.params;
   if (!email) {
     return res.status(400).send("Email is required");
   }
