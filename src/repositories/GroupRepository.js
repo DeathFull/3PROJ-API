@@ -1,11 +1,11 @@
 import {GroupModel} from "../models/GroupModel.js";
-import UserRepository from "./UserRepository.js";
 
 class GroupRepository {
   async getGroups() {
     const groups = await GroupModel.find({}, {
       name: true,
-      members: true
+      members: true,
+      description: true
     });
     return groups;
   }

@@ -68,7 +68,6 @@ passport.use(
           id,
           photos,
         } = profile;
-        console.log(profile);
         const email = emails[0].value;
         const avatar = photos[0].value;
         const user = await UserRepository.findOrCreateGoogle({
