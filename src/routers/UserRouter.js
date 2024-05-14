@@ -10,10 +10,7 @@ import mongoose from "mongoose";
 const userRouter = express.Router();
 
 const UserRegisterSchema = z.object({
-  firstname: z.string(),
-  lastname: z.string(),
-  email: z.string().email(),
-  // username: z.string(),
+  firstname: z.string(), lastname: z.string(), email: z.string().email(), // username: z.string(),
   password: z.string().min(6),
 });
 
@@ -27,10 +24,22 @@ userRouter.get("/all", async (req, res) => {
   res.json(users);
 });
 
+userRouter.get("/email", async (req, res) => {
+  const {email} = req.body;
+  if (!email) {
+    res.status(400).send("Email is required");
+  }
+  const user = await userRepository.getUserByEmail(email);
+  if (!user) {
+    res.status(404).send("User not found");
+  }
+  res.json(user);
+})
+
 userRouter.get("/:id", async (req, res) => {
   const {id} = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'Invalid ObjectID' });
+    return res.status(400).json({error: 'Invalid ObjectID'});
   }
   const user = await userRepository.getUserById(id);
   if (!user) {
@@ -53,30 +62,21 @@ userRouter.post("/register", async (req, res) => {
     console.log(validation);
 
     const {firstname, lastname, email, /*username,*/ password} = validation;
-    UserModel.register(
-      new UserModel({firstname, lastname, email /*username*/}),
-      password,
-      (err, user) => {
-        if (err) {
-          return res.status(500).send(err.message);
-        }
+    UserModel.register(new UserModel({firstname, lastname, email /*username*/}), password, (err, user) => {
+      if (err) {
+        return res.status(500).send(err.message);
+      }
 
-        passport.authenticate("local")(req, res, () => {
-          jwt.sign(
-            {
-              data: {
-                user: user._id,
-              },
-            },
-            process.env.JWT_SECRET,
-            {expiresIn: "2h"},
-            (err, token) => {
-              return res.status(201).json({token});
-            },
-          );
-        });
-      },
-    );
+      passport.authenticate("local")(req, res, () => {
+        jwt.sign({
+          data: {
+            user: user._id,
+          },
+        }, process.env.JWT_SECRET, {expiresIn: "2h"}, (err, token) => {
+          return res.status(201).json({token});
+        },);
+      });
+    },);
   } catch (e) {
     return res.status(400).send(e);
   }
@@ -96,25 +96,15 @@ userRouter.post("/login", async (req, res) => {
         return res.status(500).send(err.message);
       }
 
-      passport.authenticate("local")(
-        req,
-        res,
-        () => {
-          jwt.sign(
-            {
-              user: user._id,
-            },
-            process.env.JWT_SECRET,
-            {expiresIn: "2h"},
-            (err, token) => {
-              return res.status(201).json({token});
-            },
-          );
-        },
-        (err) => {
-          return res.status(401).send(err.content);
-        },
-      );
+      passport.authenticate("local")(req, res, () => {
+        jwt.sign({
+          user: user._id,
+        }, process.env.JWT_SECRET, {expiresIn: "2h"}, (err, token) => {
+          return res.status(201).json({token});
+        },);
+      }, (err) => {
+        return res.status(401).send(err.content);
+      },);
     });
   } catch (e) {
     return res.status(400).send(e);
@@ -127,16 +117,11 @@ userRouter.get("/login/google", (req, res) => {
 
 userRouter.get("/login/google/callback", (req, res) => {
   passport.authenticate("google", {failureRedirect: "/"})(req, res, () => {
-    jwt.sign(
-      {
-        user: req.user._id,
-      },
-      process.env.JWT_SECRET,
-      {expiresIn: "2h"},
-      (err, token) => {
-        return res.status(201).json({token});
-      },
-    );
+    jwt.sign({
+      user: req.user._id,
+    }, process.env.JWT_SECRET, {expiresIn: "2h"}, (err, token) => {
+      return res.status(201).json({token});
+    },);
   });
 });
 
@@ -144,16 +129,11 @@ userRouter.get("/login/facebook", passport.authenticate("facebook"));
 
 userRouter.get("/login/facebook/callback", (req, res) => {
   passport.authenticate("facebook", {failureRedirect: "/"})(req, res, () => {
-    jwt.sign(
-      {
-        user: req.user._id,
-      },
-      process.env.JWT_SECRET,
-      {expiresIn: "2h"},
-      (err, token) => {
-        return res.status(201).json({token});
-      },
-    );
+    jwt.sign({
+      user: req.user._id,
+    }, process.env.JWT_SECRET, {expiresIn: "2h"}, (err, token) => {
+      return res.status(201).json({token});
+    },);
   });
 });
 
