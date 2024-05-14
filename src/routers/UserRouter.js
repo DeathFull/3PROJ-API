@@ -39,6 +39,14 @@ userRouter.get("/email", async (req, res) => {
   res.json(user);
 });
 
+userRouter.get("/groups", loginMiddleware, async (req, res) => {
+  const groups = await groupRepository.getGroupsByUser(req.user);
+  if (!groups) {
+    return res.status(404).send("Groups not found");
+  }
+  res.json(groups);
+});
+
 userRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -51,13 +59,6 @@ userRouter.get("/:id", async (req, res) => {
   res.json(user);
 });
 
-userRouter.get("/groups", loginMiddleware, async (req, res) => {
-  const groups = await groupRepository.getGroupsByUser(req.user);
-  if (!groups) {
-    return res.status(404).send("Groups not found");
-  }
-  res.json(groups);
-});
 
 // TODO: À méditer
 userRouter.get("/:id/groups", async (req, res) => {
