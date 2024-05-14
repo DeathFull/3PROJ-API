@@ -1,5 +1,6 @@
 import {UserModel} from "../models/UserModel.js";
 import groupRepository from "./GroupRepository.js";
+import {Types} from "mongoose";
 
 class UserRepository {
   async getUsers() {
@@ -15,7 +16,7 @@ class UserRepository {
   }
 
   async getUserById(id) {
-    return await UserModel.findById(id);
+    return await UserModel.findOne({_id: new Types.ObjectId(id)});
   }
 
   async getUserByEmail(email) {
