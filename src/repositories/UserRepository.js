@@ -16,7 +16,7 @@ class UserRepository {
   }
 
   async getUserById(id) {
-    return await UserModel.findOne({_id: new Types.ObjectId(id)});
+    return await UserModel.findById(id);
   }
 
   async getUserByEmail(email) {
