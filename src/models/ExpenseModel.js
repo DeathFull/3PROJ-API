@@ -9,7 +9,6 @@ const expenseSchema = new mongoose.Schema({
   date: { type: Date, require: true },
   justification: { type: Buffer, require: true },
   category: { type: String, require: true },
-  refunder: { type: Types.ObjectId, require: true, ref: "Refund" },
 });
 
 export const ExpenseModel = mongoose.model("Expense", expenseSchema);
