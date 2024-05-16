@@ -17,7 +17,7 @@ expenseRouter.get("/:id", async (req, res) => {
   return res.status(200).json(expense);
 });
 
-expenseRouter.get("/:idUser", async (req, res) => {
+expenseRouter.get("/user/:idUser", async (req, res) => {
   const {idUser} = req.params;
   const {sortBy, orderBy} = req.query;
   const expenses = await expenseRepository.getExpensesByUser(idUser, sortBy, orderBy);
@@ -27,7 +27,7 @@ expenseRouter.get("/:idUser", async (req, res) => {
   return res.status(200).json(expenses);
 });
 
-expenseRouter.get("/:idGroup", async (req, res) => {
+expenseRouter.get("/group/:idGroup", async (req, res) => {
   const {idGroup} = req.params;
   const expenses = await expenseRepository.getExpensesByGroup(idGroup);
   if (!expenses) {
@@ -36,7 +36,7 @@ expenseRouter.get("/:idGroup", async (req, res) => {
   return res.status(200).json(expenses);
 });
 
-expenseRouter.get("/:category", async (req, res) => {
+expenseRouter.get("/category/:category", async (req, res) => {
   const {category} = req.params;
   const expenses = await expenseRepository.getExpensesByCategory(category);
   if (!expenses) {
