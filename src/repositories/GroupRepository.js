@@ -71,12 +71,14 @@ class GroupRepository {
         new: true
       }
     );
+    if (groupWithoutMember.members.length === 0) {
+      await GroupModel.deleteOne({
+        _id: id
+      });
+    }
     return groupWithoutMember;
   }
 
-  async deleteGroup(id) {
-    return await GroupModel.deleteOne(id);
-  }
 }
 
 export default new GroupRepository();

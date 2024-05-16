@@ -1,6 +1,7 @@
 import express from "express";
 import groupRepository from "../repositories/GroupRepository.js";
 import userRepository from "../repositories/UserRepository.js";
+import {loginMiddleware} from "../middlewares/loginMiddleware.js";
 
 const groupRouter = express.Router();
 
@@ -62,25 +63,18 @@ groupRouter.put("/:id/addUser", async (req, res) => {
   }
 });
 
-groupRouter.put("/:id/removeUser", async (req, res) => {
+groupRouter.put("/:id/removeUser", loginMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { idUser } = req.body;
     const groupToUpdate = await groupRepository.getGroupById(id);
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");
     }
-    await groupRepository.removeUserFromGroup(id, idUser);
+    await groupRepository.removeUserFromGroup(id, req.user);
     res.status(200).send("User removed from group");
   } catch (e) {
     return res.status(400).send(e);
   }
-});
-
-groupRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  await groupRepository.deleteGroup(id);
-  res.status(204).send("Group deleted");
 });
 
 export default groupRouter;
