@@ -1,4 +1,5 @@
 import {GroupModel} from "../models/GroupModel.js";
+import {RefundModel} from "../models/RefundModel.js";
 
 class GroupRepository {
   async getGroups() {
@@ -57,6 +58,10 @@ class GroupRepository {
 
 
   async removeUserFromGroup(id, idUser) {
+    const userWithRefundNotPaid = await RefundModel.find({refunder: idUser, isRefunded: false});
+    if (userWithRefundNotPaid.length > 0) {
+      return "User still has refund to pay";
+    }
     const groupWithoutMember = await GroupModel.findOneAndUpdate(
       {
         _id: id
