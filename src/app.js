@@ -73,7 +73,7 @@ passport.use(
         const user = await UserRepository.findOrCreateGoogle({
           googleId: id,
           firstname: givenName,
-          lastname: familyName,
+          lastname: familyName !== undefined ? familyName : " ",
           email: email,
           avatar: avatar,
         });

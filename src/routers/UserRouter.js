@@ -1,10 +1,10 @@
 import express from "express";
 import userRepository from "../repositories/UserRepository.js";
-import {z} from "zod";
-import {UserModel} from "../models/UserModel.js";
+import { z } from "zod";
+import { UserModel } from "../models/UserModel.js";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import {loginMiddleware} from "../middlewares/loginMiddleware.js";
+import { loginMiddleware } from "../middlewares/loginMiddleware.js";
 import mongoose from "mongoose";
 import groupRepository from "../repositories/GroupRepository.js";
 
@@ -28,7 +28,7 @@ userRouter.get("/all", async (req, res) => {
 });
 
 userRouter.get("/email/:email", async (req, res) => {
-  const {email} = req.params;
+  const { email } = req.params;
   if (!email) {
     return res.status(400).send("Email is required");
   }
@@ -48,9 +48,9 @@ userRouter.get("/groups", loginMiddleware, async (req, res) => {
 });
 
 userRouter.get("/:id", async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({error: "Invalid ObjectID"});
+    return res.status(400).json({ error: "Invalid ObjectID" });
   }
   const user = await userRepository.getUserById(id);
   if (!user) {
@@ -61,7 +61,7 @@ userRouter.get("/:id", async (req, res) => {
 
 // TODO: À méditer
 userRouter.get("/:id/groups", async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const groups = await groupRepository.getGroupsByUser(id);
   if (!groups) {
     return res.status(404).send("Groups not found");
@@ -76,9 +76,9 @@ userRouter.post("/register", async (req, res) => {
 
     console.log(validation);
 
-    const {firstname, lastname, email, /*username,*/ password} = validation;
+    const { firstname, lastname, email, /*username,*/ password } = validation;
     UserModel.register(
-      new UserModel({firstname, lastname, email /*username*/}),
+      new UserModel({ firstname, lastname, email /*username*/ }),
       password,
       (err, user) => {
         if (err) {
@@ -93,9 +93,9 @@ userRouter.post("/register", async (req, res) => {
               },
             },
             process.env.JWT_SECRET,
-            {expiresIn: "2h"},
+            { expiresIn: "2h" },
             (err, token) => {
-              return res.status(201).json({token});
+              return res.status(201).json({ token });
             },
           );
         });
@@ -129,9 +129,9 @@ userRouter.post("/login", async (req, res) => {
               user: user._id,
             },
             process.env.JWT_SECRET,
-            {expiresIn: "2h"},
+            { expiresIn: "2h" },
             (err, token) => {
-              return res.status(200).json({token});
+              return res.status(200).json({ token });
             },
           );
         },
@@ -148,37 +148,40 @@ userRouter.post("/login", async (req, res) => {
 userRouter.get("/login/google", (req, res) => {
   req.session.redirectUrl = req.query.redirectUrl;
 
-  passport.authenticate("google", {scope: ["profile", "email"]})(req, res);
+  passport.authenticate("google", { scope: ["profile", "email"] })(req, res);
 });
 
-userRouter.get("/login/google/callback", (req, res) => {
-  const redirectUrl = req.session.redirectUrl;
-  passport.authenticate("google", {failureRedirect: "/"})(req, res, () => {
+userRouter.get(
+  "/login/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    const redirectUrl = req.session.redirectUrl;
+    console.log(redirectUrl);
     jwt.sign(
       {
         user: req.user._id,
       },
       process.env.JWT_SECRET,
-      {expiresIn: "2h"},
+      { expiresIn: "2h" },
       (err, token) => {
         return res.redirect(`${redirectUrl}?token=${token}`);
       },
     );
-  });
-});
+  },
+);
 
 userRouter.get("/login/facebook", passport.authenticate("facebook"));
 
 userRouter.get("/login/facebook/callback", (req, res) => {
-  passport.authenticate("facebook", {failureRedirect: "/"})(req, res, () => {
+  passport.authenticate("facebook", { failureRedirect: "/" })(req, res, () => {
     jwt.sign(
       {
         user: req.user._id,
       },
       process.env.JWT_SECRET,
-      {expiresIn: "2h"},
+      { expiresIn: "2h" },
       (err, token) => {
-        return res.status(200).json({token});
+        return res.status(200).json({ token });
       },
     );
   });
@@ -186,7 +189,7 @@ userRouter.get("/login/facebook/callback", (req, res) => {
 
 userRouter.put("/:id", async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const userToUpdate = await userRepository.getUserById(id);
     if (!userToUpdate) {
       return res.status(404).send("User not found");
@@ -199,7 +202,7 @@ userRouter.put("/:id", async (req, res) => {
 });
 
 userRouter.delete("/:id", async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   await userRepository.deleteUser(id);
   res.status(204).send("User deleted");
 });
