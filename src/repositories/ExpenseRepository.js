@@ -23,9 +23,9 @@ class ExpenseRepository {
     return await ExpenseModel.find({idUser: idUser}).sort({date: -1});
   }
 
-  async getExpensesByGroup(idGroup,sortBy,order) {
-    const sortOptions = [[sortBy, Number(order)]];
-    return await ExpenseModel.find({idGroup: idGroup}).sort(sortOptions);
+  async getExpensesByGroup(idGroup) {
+    // const sortOptions = [[sortBy, Number(order)]];
+    return await ExpenseModel.find({idGroup: idGroup});
   }
 
   async getExpensesByCategory(category) {
