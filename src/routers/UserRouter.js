@@ -146,17 +146,24 @@ userRouter.post("/login", async (req, res) => {
 });
 
 userRouter.get("/login/google", (req, res) => {
-  req.session.redirectUrl = req.query.redirectUrl;
+  if (!req.query.redirectUrl) {
+    res.status(400).send("no redirectUrl specified");
+  }
 
-  passport.authenticate("google", { scope: ["profile", "email"] })(req, res);
+  const redirectUrl = req.query.redirectUrl;
+  const state = JSON.stringify({ redirectUrl });
+
+  passport.authenticate("google", {
+    state,
+    scope: ["profile", "email"],
+  })(req, res);
 });
 
 userRouter.get(
   "/login/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    const redirectUrl = req.session.redirectUrl;
-    console.log(redirectUrl);
+    const { redirectUrl } = JSON.parse(req.query.state);
     jwt.sign(
       {
         user: req.user._id,

@@ -14,6 +14,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import UserRepository from "./repositories/UserRepository.js";
 import dotenv from "dotenv";
 import { Strategy as FacebookStrategy } from "passport-facebook";
+import MongoStore from "connect-mongo";
 
 const app = express();
 
@@ -27,8 +28,11 @@ app.use(
 app.use(
   session({
     secret: "the super secret key",
-    resave: false,
+    resave: true,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+    }),
   }),
 );
 app.use(passport.initialize());
