@@ -7,7 +7,7 @@ const expenseSchema = new mongoose.Schema({
   description: { type: String, require: true },
   amount: { type: Number, require: true },
   date: { type: Date, require: true },
-  justification: { type: Buffer, require: true },
+  justification: { type: String, require: true },
   category: { type: String, require: true },
 });
 

@@ -6,22 +6,22 @@ const messageRouter = express.Router();
 
 messageRouter.get("/", async (req, res) => {
   const messages = await messageRepository.getMessages();
-  res.json(messages);
+  return res.status(200).json(messages);
 })
 
 messageRouter.get("/:id", async (req, res) => {
   const {id} = req.params;
   const message = await messageRepository.getMessageById(id)
   if (!message) {
-    res.status(404).send("Message not found");
+    return res.status(404).send("Message not found");
   }
-  res.json(message);
+  return res.status(200).json(message);
 })
 
 messageRouter.post("/", async (req, res) => {
   try {
     const message = await messageRepository.createMessage(req.body);
-    res.status(201).json(message);
+    return res.status(201).json(message);
   } catch (e) {
     return res.status(400).send(e);
   }
@@ -35,7 +35,7 @@ messageRouter.put("/:id", async (req, res) => {
       return res.status(404).send("Message not found");
     }
     await messageRepository.updateMessage(id, req.body)
-    res.status(200).send("Message updated")
+    return res.status(200).send("Message updated")
   } catch (e) {
     return res.status(400).send(e);
   }
@@ -44,6 +44,6 @@ messageRouter.put("/:id", async (req, res) => {
 messageRouter.delete("/:id", async (req, res) => {
   const {id} = req.params;
   await messageRepository.deleteMessage(id);
-  res.status(204).send("Message deleted")
+  return res.status(204).send("Message deleted")
 })
 

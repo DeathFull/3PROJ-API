@@ -19,12 +19,12 @@ const UserRegisterSchema = z.object({
 
 userRouter.get("/", loginMiddleware, async (req, res) => {
   const account = await userRepository.getUserById(req.user);
-  res.json(account);
+  return res.status(200).json(account);
 });
 
 userRouter.get("/all", async (req, res) => {
   const users = await userRepository.getUsers();
-  res.json(users);
+  return res.status(200).json(users);
 });
 
 userRouter.get("/email/:email", async (req, res) => {
@@ -36,7 +36,7 @@ userRouter.get("/email/:email", async (req, res) => {
   if (!user) {
     return res.status(404).send("User not found");
   }
-  res.json(user);
+  return res.status(200).json(user);
 });
 
 userRouter.get("/groups", loginMiddleware, async (req, res) => {
@@ -44,7 +44,7 @@ userRouter.get("/groups", loginMiddleware, async (req, res) => {
   if (!groups) {
     return res.status(404).send("Groups not found");
   }
-  res.json(groups);
+  return res.status(200).json(groups);
 });
 
 userRouter.get("/:id", async (req, res) => {
@@ -56,7 +56,7 @@ userRouter.get("/:id", async (req, res) => {
   if (!user) {
     return res.status(404).send("User not found");
   }
-  res.json(user);
+  return res.status(200).json(user);
 });
 
 // TODO: À méditer
@@ -66,7 +66,7 @@ userRouter.get("/:id/groups", async (req, res) => {
   if (!groups) {
     return res.status(404).send("Groups not found");
   }
-  res.json(groups);
+  return res.status(200).json(groups);
 });
 
 userRouter.post("/register", async (req, res) => {
@@ -202,7 +202,7 @@ userRouter.put("/:id", async (req, res) => {
       return res.status(404).send("User not found");
     }
     await userRepository.updateUser(id, req.body);
-    res.status(200).send("User updated");
+    return res.status(200).send("User updated");
   } catch (e) {
     return res.status(400).send(e);
   }
@@ -211,7 +211,7 @@ userRouter.put("/:id", async (req, res) => {
 userRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
   await userRepository.deleteUser(id);
-  res.status(204).send("User deleted");
+  return res.status(204).send("User deleted");
 });
 
 export default userRouter;
