@@ -17,8 +17,8 @@ import { Strategy as FacebookStrategy } from "passport-facebook";
 import MongoStore from "connect-mongo";
 
 const app = express();
-
 dotenv.config();
+
 app.use(express.json({ limit: "16mb" }));
 app.use(
   cors({

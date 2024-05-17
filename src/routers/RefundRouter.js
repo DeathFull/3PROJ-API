@@ -9,7 +9,7 @@ refundRouter.get("/", async (req, res) => {
 });
 
 refundRouter.get("/:id", async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const refund = await refundRepository.getRefundById(id);
   if (!refund) {
     return res.status(404).send("Refund not found");
@@ -18,7 +18,7 @@ refundRouter.get("/:id", async (req, res) => {
 });
 
 refundRouter.get("/:idUser", async (req, res) => {
-  const {idUser} = req.params;
+  const { idUser } = req.params;
   const refunds = await refundRepository.getRefundsByUser(idUser);
   if (!refunds) {
     return res.status(404).send("Refunds not found");
@@ -37,7 +37,7 @@ refundRouter.post("/", async (req, res) => {
 
 refundRouter.put("/:id", async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const refundToUpdate = await refundRepository.getRefundById(id);
     if (!refundToUpdate) {
       return res.status(404).send("Refund not found");
@@ -50,7 +50,7 @@ refundRouter.put("/:id", async (req, res) => {
 });
 
 refundRouter.delete("/:id", async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   await refundRepository.deleteRefund(id);
   return res.status(204).send("Refund deleted");
 });

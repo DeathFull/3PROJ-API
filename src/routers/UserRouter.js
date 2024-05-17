@@ -7,8 +7,19 @@ import jwt from "jsonwebtoken";
 import { loginMiddleware } from "../middlewares/loginMiddleware.js";
 import mongoose from "mongoose";
 import groupRepository from "../repositories/GroupRepository.js";
+import multer from "multer";
+import { BlobServiceClient } from "@azure/storage-blob";
+import dotenv from "dotenv";
 
 const userRouter = express.Router();
+dotenv.config();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+  process.env.AZURE_STORAGE_CONNECTION_STRING,
+);
+const containerName = "images";
 
 const UserRegisterSchema = z.object({
   firstname: z.string(),
@@ -207,6 +218,43 @@ userRouter.put("/:id", async (req, res) => {
     return res.status(400).send(e);
   }
 });
+
+userRouter.post(
+  "/updateImage",
+  loginMiddleware,
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      const file = req.file;
+      if (!file) {
+        return res.status(400).send("No file uploaded.");
+      }
+
+      if (!file.mimetype.startsWith("image/")) {
+        return res.status(400).send("File is not an image.");
+      }
+
+      const user = req.user;
+      const extension = file.originalname.split(".");
+
+      const blobName = [user, extension[extension.length - 1]].join(".");
+      const containerClient =
+        blobServiceClient.getContainerClient(containerName);
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+      await blockBlobClient.uploadData(file.buffer, {
+        blobHTTPHeaders: {
+          blobContentType: file.mimetype,
+        },
+      });
+
+      return res.status(200).send(`${blockBlobClient.url}`);
+    } catch (error) {
+      console.error("Error uploading file to Azure Blob Storage:", error);
+      return res.status(500).send("Error uploading file.");
+    }
+  },
+);
 
 userRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
