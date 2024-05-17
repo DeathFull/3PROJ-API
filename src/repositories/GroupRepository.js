@@ -12,7 +12,7 @@ class GroupRepository {
   }
 
   async getGroupById(id) {
-    return await GroupModel.findById(id)
+    return await GroupModel.findById(id);
   }
 
   async getGroupsByUser(idUser) {

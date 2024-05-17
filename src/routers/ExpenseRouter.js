@@ -22,9 +22,9 @@ expenseRouter.get("/", loginMiddleware, async (req, res) => {
   return res.status(200).json(expenses);
 });
 
-expenseRouter.get("/:id",loginMiddleware, async (req, res) => {
+expenseRouter.get("/:id", loginMiddleware, async (req, res) => {
   const {id} = req.params;
-  if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false){
+  if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false) {
     return res.status(403).send("You are not allowed to see this expense");
   }
   const expense = await expenseRepository.getExpenseById(id);
@@ -45,7 +45,7 @@ expenseRouter.get("/user", loginMiddleware, async (req, res) => {
 
 expenseRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
   const {idGroup} = req.params;
-  if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false){
+  if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false) {
     return res.status(403).send("You are not allowed to see this expense");
   }
   const expenses = await expenseRepository.getExpensesByGroup(idGroup);
@@ -66,10 +66,9 @@ expenseRouter.get("/category/:category", loginMiddleware, async (req, res) => {
 
 expenseRouter.post("/", loginMiddleware, async (req, res) => {
   try {
-    if (req.body.idUser !== req.user) {
+    /*if (req.body.idUser !== req.user) {
       return res.status(403).send("You are not allowed to create an expense for another user");
-    }
-
+    }*/
     const expenseData = {idUser: req.user, ...ExpenseSchema.parse(req.body)}
     const expense = await expenseRepository.createExpense(expenseData);
     if (expense) {
