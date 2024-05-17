@@ -40,8 +40,8 @@ class ExpenseRepository {
     return await ExpenseModel.findOneAndUpdate({_id: id}, payload);
   }
 
-  async deleteExpense(id) {
-    return await ExpenseModel.deleteOne(id);
+  async deleteExpense(idGroup, idUser) {
+    return await ExpenseModel.findOneAndDelete({idGroup: idGroup, idUser: idUser});
   }
 }
 

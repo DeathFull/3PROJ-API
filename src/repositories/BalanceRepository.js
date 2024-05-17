@@ -9,8 +9,16 @@ class BalanceRepository {
     return await BalanceModel.findById(id);
   }
 
-  getBalancesByUser(idUser) {
-    return BalanceModel.find({idUser: idUser});
+  async getBalancesByUser(idUser) {
+    return await BalanceModel.find({idUser: idUser});
+  }
+
+  async getBalancesByGroup(idGroup) {
+    return await BalanceModel.find({idGroup: idGroup});
+  }
+
+  async getBalanceByUserAndGroup(idUser, idGroup) {
+    return await BalanceModel.findOne({idUser: idUser, idGroup: idGroup});
   }
 
   async createBalance(payload) {
@@ -21,8 +29,17 @@ class BalanceRepository {
     return await BalanceModel.findOneAndUpdate({_id: id}, payload);
   }
 
-  async deleteBalance(id){
-    return await BalanceModel.deleteOne(id);
+  async updateBalanceByUserAndGroup(idUser, idGroup, amount) {
+    return await BalanceModel.findOneAndUpdate({
+        idUser: idUser,
+        idGroup: idGroup
+      },
+      {$inc: {balance: amount}},
+      {new: true, upsert: true});
+  }
+
+  async deleteBalance(idGroup, idUser) {
+    return await BalanceModel.findOneAndDelete({idGroup: idGroup, idUser: idUser});
   }
 }
 
