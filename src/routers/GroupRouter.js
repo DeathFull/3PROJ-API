@@ -5,13 +5,14 @@ import {loginMiddleware} from "../middlewares/loginMiddleware.js";
 
 const groupRouter = express.Router();
 
-groupRouter.get("/", async (req, res) => {
+groupRouter.get("/", loginMiddleware, async (req, res) => {
   const groups = await groupRepository.getGroups();
   return res.status(200).json(groups);
 });
 
-groupRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+groupRouter.get("/:id", loginMiddleware, async (req, res) => {
+  const {id} = req.params;
+
   const group = await groupRepository.getGroupById(id);
   if (!group) {
     return res.status(404).send("Group not found");
@@ -19,14 +20,22 @@ groupRouter.get("/:id", async (req, res) => {
   return res.status(200).json(group);
 });
 
-groupRouter.get("/:id/users", async (req, res) => {
-  const { id } = req.params;
-  const users = await userRepository.getUsersByGroup(id);
-  return res.status(200).json(users);
+groupRouter.get("/:id/users", loginMiddleware, async (req, res) => {
+  const {id} = req.params;
+  const group = await groupRepository.getGroupById(id);
+  if (group.includes(req.user) === true) {
+    const users = await userRepository.getUsersByGroup(id, group);
+    return res.status(200).json(users);
+  } else {
+    return res.status(403).send("You are not allowed to see this group's users");
+  }
 });
 
-groupRouter.post("/", async (req, res) => {
+groupRouter.post("/", loginMiddleware, async (req, res) => {
   try {
+    if (req.body.members.includes(req.user) === false) {
+      return res.status(403).send("You are not allowed to create a group without yourself");
+    }
     const group = await groupRepository.createGroup(req.body);
     return res.status(201).json(group);
   } catch (e) {
@@ -34,10 +43,13 @@ groupRouter.post("/", async (req, res) => {
   }
 });
 
-groupRouter.put("/:id", async (req, res) => {
+groupRouter.put("/:id", loginMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {id} = req.params;
     const groupToUpdate = await groupRepository.getGroupById(id);
+    if (groupToUpdate.members.includes(req.user) === false) {
+      return res.status(403).send("You are not allowed to update this group");
+    }
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");
     }
@@ -48,11 +60,14 @@ groupRouter.put("/:id", async (req, res) => {
   }
 });
 
-groupRouter.put("/:id/addUser", async (req, res) => {
+groupRouter.put("/:id/addUser", loginMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
-    const { idUser } = req.body;
+    const {id} = req.params;
+    const {idUser} = req.body;
     const groupToUpdate = await groupRepository.getGroupById(id);
+    if (groupToUpdate.members.includes(req.user) === false) {
+      return res.status(403).send("You are not allowed to add a user to this group");
+    }
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");
     }
@@ -65,7 +80,7 @@ groupRouter.put("/:id/addUser", async (req, res) => {
 
 groupRouter.put("/:id/removeUser", loginMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {id} = req.params;
     const groupToUpdate = await groupRepository.getGroupById(id);
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");

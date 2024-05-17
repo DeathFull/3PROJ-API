@@ -11,7 +11,7 @@ const BalanceSchema = z.object({
   balance: z.number(),
 })
 
-balanceRouter.get("/", async (req, res) => {
+balanceRouter.get("/", loginMiddleware, async (req, res) => {
   const balances = await balanceRepository.getBalances();
   return res.status(200).json(balances);
 })

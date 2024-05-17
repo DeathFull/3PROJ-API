@@ -1,5 +1,4 @@
 import {UserModel} from "../models/UserModel.js";
-import groupRepository from "./GroupRepository.js";
 
 class UserRepository {
   async getUsers() {
@@ -22,8 +21,7 @@ class UserRepository {
     return UserModel.findOne({email: email});
   }
 
-  async getUsersByGroup(idGroup) {
-    const group = await groupRepository.getGroupById(idGroup);
+  async getUsersByGroup(group) {
     const users = [];
     for (const member of group.members) {
       const user = await UserModel.findById(member);

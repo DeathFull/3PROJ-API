@@ -33,12 +33,12 @@ userRouter.get("/", loginMiddleware, async (req, res) => {
   return res.status(200).json(account);
 });
 
-userRouter.get("/all", async (req, res) => {
+userRouter.get("/all", loginMiddleware, async (req, res) => {
   const users = await userRepository.getUsers();
   return res.status(200).json(users);
 });
 
-userRouter.get("/email/:email", async (req, res) => {
+userRouter.get("/email/:email", loginMiddleware,async (req, res) => {
   const { email } = req.params;
   if (!email) {
     return res.status(400).send("Email is required");
@@ -205,14 +205,13 @@ userRouter.get("/login/facebook/callback", (req, res) => {
   });
 });
 
-userRouter.put("/:id", async (req, res) => {
+userRouter.put("/", loginMiddleware,async (req, res) => {
   try {
-    const { id } = req.params;
-    const userToUpdate = await userRepository.getUserById(id);
+    const userToUpdate = await userRepository.getUserById(req.user);
     if (!userToUpdate) {
       return res.status(404).send("User not found");
     }
-    await userRepository.updateUser(id, req.body);
+    await userRepository.updateUser(req.user, req.body);
     return res.status(200).send("User updated");
   } catch (e) {
     return res.status(400).send(e);
@@ -257,9 +256,8 @@ userRouter.post(
   },
 );
 
-userRouter.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  await userRepository.deleteUser(id);
+userRouter.delete("/", loginMiddleware,async (req, res) => {
+  await userRepository.deleteUser(req.user);
   return res.status(204).send("User deleted");
 });
 
