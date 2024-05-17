@@ -248,6 +248,7 @@ userRouter.post(
         },
       });
 
+      await userRepository.updateUser(user, { avatar: blockBlobClient.url });
       return res.status(200).send(`${blockBlobClient.url}`);
     } catch (error) {
       console.error("Error uploading file to Azure Blob Storage:", error);
