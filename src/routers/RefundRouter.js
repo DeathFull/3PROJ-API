@@ -6,7 +6,7 @@ const refundRouter = express.Router();
 
 refundRouter.get("/", loginMiddleware, async (req, res) => {
   const refunds = await refundRepository.getRefunds();
-  return res.satus(200).json(refunds);
+  return res.status(200).json(refunds);
 });
 
 refundRouter.get("/:id", loginMiddleware, async (req, res) => {
