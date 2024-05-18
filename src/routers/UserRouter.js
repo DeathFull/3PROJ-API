@@ -211,8 +211,8 @@ userRouter.put("/", loginMiddleware,async (req, res) => {
     if (!userToUpdate) {
       return res.status(404).send("User not found");
     }
-    await userRepository.updateUser(req.user, req.body);
-    return res.status(200).send("User updated");
+    const userUpdated = await userRepository.updateUser(req.user, req.body);
+    return res.status(201).send(userUpdated);
   } catch (e) {
     return res.status(400).send(e);
   }
