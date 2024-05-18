@@ -71,6 +71,9 @@ groupRouter.put("/:id/addUser", loginMiddleware, async (req, res) => {
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");
     }
+    if (groupToUpdate.members.includes(idUser) === true) {
+      return res.status(400).send("User is already in the group");
+    }
     await groupRepository.addUserToGroup(id, idUser);
     return res.status(200).send("User added to group");
   } catch (e) {
