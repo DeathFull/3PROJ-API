@@ -63,14 +63,7 @@ refundRouter.put("/:idGroup", loginMiddleware, async (req, res) => {
     const {idGroup} = req.params;
     const payerId = req.user;
     const {refunderId} = req.body;
-    const refundToUpdate = await refundRepository.getRefundByGroupPayerRefunder(idGroup, payerId, refunderId);
-    if (!refundToUpdate) {
-      return res.status(404).send("Refund not found");
-    }
-    /*if (refundToUpdate.refunderId !== req.user) {
-      return res.status(403).send("You are not allowed to update this refund");
-    }*/
-    await refundRepository.updateRefund(id, req.body);
+    await refundRepository.updateRefund(idGroup, payerId, refunderId, req.body);
     return res.status(200).send("Refund updated");
   } catch (e) {
     return res.status(400).send(e);

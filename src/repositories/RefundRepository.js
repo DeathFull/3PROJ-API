@@ -31,9 +31,9 @@ class RefundRepository {
 
   async updateRefund(idGroup, idPayer, idRefunder, payload) {
     return RefundModel.findOneAndUpdate({
-        idPayer: idPayer,
+        payerId: idPayer,
         idGroup: idGroup,
-        idRefunder: idRefunder
+        refunderId: idRefunder
       },
       {$inc: {amount: payload.amount}},
       {new: true, upsert: true});
