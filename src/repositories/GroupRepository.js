@@ -3,44 +3,40 @@ import {RefundModel} from "../models/RefundModel.js";
 
 class GroupRepository {
   async getGroups() {
-    const groups = await GroupModel.find({}, {
+    return GroupModel.find({}, {
       name: true,
       members: true,
       description: true
     });
-    return groups;
   }
 
   async getGroupById(id) {
-    return await GroupModel.findById(id);
+    return GroupModel.findById(id);
   }
 
   async getGroupsByUser(idUser) {
-    const groups = await GroupModel.find({
+    return GroupModel.find({
       members: {
         $in: [idUser]
       }
-    });
-    return groups;
+    }).populate("members");
   }
 
   async createGroup(payload) {
-    return await GroupModel.create(payload);
+    return GroupModel.create(payload);
   }
 
   async updateGroup(id, payload) {
-    const newGroup = await GroupModel.findOneAndUpdate(
+    return GroupModel.findOneAndUpdate(
       {
         _id: id
       },
       payload
     );
-
-    return newGroup;
   }
 
   async addUserToGroup(id, idUser) {
-    const groupWithNewMember = await GroupModel.findOneAndUpdate(
+    return GroupModel.findOneAndUpdate(
       {
         _id: id
       },
@@ -53,7 +49,6 @@ class GroupRepository {
         new: true
       }
     );
-    return groupWithNewMember;
   }
 
 
