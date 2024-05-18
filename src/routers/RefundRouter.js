@@ -10,7 +10,7 @@ refundRouter.get("/", loginMiddleware, async (req, res) => {
 });
 
 refundRouter.get("/:id", loginMiddleware, async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const refund = await refundRepository.getRefundById(id);
   if (refund.refunderId !== req.user) {
     return res.status(403).send("You are not allowed to see this refund");
@@ -38,7 +38,7 @@ refundRouter.get("/payer/:idUser", loginMiddleware, async (req, res) => {
 });
 
 refundRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
-  const { idGroup } = req.params;
+  const {idGroup} = req.params;
   const refunds = await refundRepository.getRefundsByGroup(idGroup);
   if (!refunds) {
     return res.status(404).send("Refunds not found");
@@ -46,9 +46,9 @@ refundRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
   return res.status(200).json(refunds);
 });
 
-refundRouter.post("/", loginMiddleware,async (req, res) => {
+refundRouter.post("/", loginMiddleware, async (req, res) => {
   try {
-    /*if (req.body.refunderId !== req.user) {
+    /*if (req.body.payerId !== req.user) {
       return res.status(403).send("You are not allowed to create a refund for another user");
     }*/
     const refund = await refundRepository.createRefund(req.body);
@@ -58,16 +58,18 @@ refundRouter.post("/", loginMiddleware,async (req, res) => {
   }
 });
 
-refundRouter.put("/:id", loginMiddleware, async (req, res) => {
+refundRouter.put("/:idGroup", loginMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
-    const refundToUpdate = await refundRepository.getRefundById(id);
+    const {idGroup} = req.params;
+    const payerId = req.user;
+    const {refunderId} = req.body;
+    const refundToUpdate = await refundRepository.getRefundByGroupPayerRefunder(idGroup, payerId, refunderId);
     if (!refundToUpdate) {
       return res.status(404).send("Refund not found");
     }
-    if (refundToUpdate.refunderId !== req.user) {
+    /*if (refundToUpdate.refunderId !== req.user) {
       return res.status(403).send("You are not allowed to update this refund");
-    }
+    }*/
     await refundRepository.updateRefund(id, req.body);
     return res.status(200).send("Refund updated");
   } catch (e) {
@@ -76,7 +78,7 @@ refundRouter.put("/:id", loginMiddleware, async (req, res) => {
 });
 
 refundRouter.delete("/:id", loginMiddleware, async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   if ((await refundRepository.getRefundById(id)).refunderId !== req.user) {
     return res.status(403).send("You are not allowed to delete this refund");
   }

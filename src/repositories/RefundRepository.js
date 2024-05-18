@@ -21,6 +21,10 @@ class RefundRepository {
     return RefundModel.find({idGroup}).populate("idGroup");
   }
 
+  async getRefundByGroupPayerRefunder(idGroup, idPayer, idRefunder) {
+    return RefundModel.findOne({idGroup: idGroup, payerId: idPayer, refunderId: idRefunder});
+  }
+
   async createRefund(payload) {
     return RefundModel.create(payload);
   }
