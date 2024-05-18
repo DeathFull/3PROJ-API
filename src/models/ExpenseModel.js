@@ -9,6 +9,7 @@ const expenseSchema = new mongoose.Schema({
   date: { type: Date, require: true },
   justification: { type: String, require: true },
   category: { type: String, require: true },
+  members: [{ type: Types.ObjectId, ref: "User" }],
 });
 
 export const ExpenseModel = mongoose.model("Expense", expenseSchema);

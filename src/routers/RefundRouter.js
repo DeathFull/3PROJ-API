@@ -21,12 +21,29 @@ refundRouter.get("/:id", loginMiddleware, async (req, res) => {
   return res.status(200).json(refund);
 });
 
-refundRouter.get("/:idUser", loginMiddleware, async (req, res) => {
-  const refunds = await refundRepository.getRefundsByUser(req.user);
+refundRouter.get("/refunder/:idUser", loginMiddleware, async (req, res) => {
+  const refunds = await refundRepository.getRefundsByRefunder(req.user);
   if (!refunds) {
     return res.status(404).send("Refunds not found");
   }
   return res.satus(200).json(refunds);
+});
+
+refundRouter.get("/payer/:idUser", loginMiddleware, async (req, res) => {
+  const refunds = await refundRepository.getRefundsByPayer(req.user);
+  if (!refunds) {
+    return res.status(404).send("Refunds not found");
+  }
+  return res.status(200).json(refunds);
+});
+
+refundRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
+  const { idGroup } = req.params;
+  const refunds = await refundRepository.getRefundsByGroup(idGroup);
+  if (!refunds) {
+    return res.status(404).send("Refunds not found");
+  }
+  return res.status(200).json(refunds);
 });
 
 refundRouter.post("/", loginMiddleware,async (req, res) => {

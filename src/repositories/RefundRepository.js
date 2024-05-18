@@ -2,15 +2,23 @@ import {RefundModel} from "../models/RefundModel.js";
 
 class RefundRepository {
   async getRefunds() {
-    return RefundModel.find({}, {refunderId: true, percentage: true, isRefunded: true});
+    return RefundModel.find();
   }
 
   async getRefundById(id) {
     return RefundModel.findById(id);
   }
 
-  getRefundsByUser(idUser) {
+  async getRefundsByRefunder(idUser) {
     return RefundModel.find({refunderId: idUser}).populate("refunderId");
+  }
+
+  async getRefundsByPayer(idUser) {
+    return RefundModel.find({payerId: idUser}).populate("payerId");
+  }
+
+  async getRefundsByGroup(idGroup) {
+    return RefundModel.find({idGroup}).populate("idGroup");
   }
 
   async createRefund(payload) {
