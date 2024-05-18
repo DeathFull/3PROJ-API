@@ -48,9 +48,9 @@ refundRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
 
 refundRouter.post("/", loginMiddleware,async (req, res) => {
   try {
-    if (req.body.refunderId !== req.user) {
+    /*if (req.body.refunderId !== req.user) {
       return res.status(403).send("You are not allowed to create a refund for another user");
-    }
+    }*/
     const refund = await refundRepository.createRefund(req.body);
     return res.status(201).json(refund);
   } catch (e) {
