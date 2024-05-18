@@ -41,6 +41,21 @@ class BalanceRepository {
   async deleteBalance(idGroup, idUser) {
     return BalanceModel.findOneAndDelete({idGroup: idGroup, idUser: idUser});
   }
+
+  async balancingBalances(){
+    const balances = await this.getBalances();
+    const groups = [...new Set(balances.map(b => b.idGroup))];
+    for (const group of groups) {
+      const balancesGroup = balances.filter(b => b.idGroup.toString() === group.toString());
+      const total = balancesGroup.reduce((acc, b) => acc + b.balance, 0);
+      const average = total / balancesGroup.length;
+      for (const balance of balancesGroup) {
+        const diff = balance.balance - average;
+        await this.updateBalanceByUserAndGroup(balance.idUser, group, -diff);
+      }
+    }
+  }
+
 }
 
 export default new BalanceRepository();

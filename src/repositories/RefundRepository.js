@@ -36,7 +36,7 @@ class RefundRepository {
         refunderId: idRefunder
       },
       {$inc: {amount: payload.amount}},
-      {new: true, upsert: true});
+      {new: true, upsert: true}).populate("payerId").populate("refunderId").populate("idGroup").exec();
   }
 
   async deleteRefund(id) {
