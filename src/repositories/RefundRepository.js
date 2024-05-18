@@ -29,8 +29,14 @@ class RefundRepository {
     return RefundModel.create(payload);
   }
 
-  async updateRefund(id, payload) {
-    return RefundModel.findOneAndUpdate({_id: id}, payload);
+  async updateRefund(idGroup, idPayer, idRefunder, payload) {
+    return RefundModel.findOneAndUpdate({
+        idPayer: idPayer,
+        idGroup: idGroup,
+        idRefunder: idRefunder
+      },
+      {$inc: {amount: payload.amount}},
+      {new: true, upsert: true});
   }
 
   async deleteRefund(id) {
