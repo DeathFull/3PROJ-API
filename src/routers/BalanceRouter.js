@@ -40,7 +40,7 @@ balanceRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
   const {idGroup} = req.params;
   console.log("user", req.user)
   console.log("group", (await groupRepository.getGroupById(idGroup)).members)
-  if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false){
+  if (!(await groupRepository.getGroupById(idGroup)).members.some(member => member._id.toString() === idUser)){
     return res.status(403).send("You are not allowed to see this balance");
   }
   const balances = await balanceRepository.getBalancesByGroup(idGroup);
