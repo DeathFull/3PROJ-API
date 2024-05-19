@@ -124,12 +124,8 @@ groupRouter.get("/export/:groupId", async (req, res) => {
       doc.on("data", buffers.push.bind(buffers));
       doc.on("end", () => {
         let pdfData = Buffer.concat(buffers);
-        if (format === "pdf") {
-          res.contentType("application/pdf");
-          res.send(pdfData);
-        } else {
-          zip.append(pdfData, { name: "recapitulatif.pdf" });
-        }
+        res.contentType("application/pdf");
+        res.send(pdfData);
       });
 
       doc.fontSize(25).text("Récapitulatif des dépenses et remboursements", {
