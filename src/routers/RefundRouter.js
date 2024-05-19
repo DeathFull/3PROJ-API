@@ -12,11 +12,11 @@ refundRouter.get("/", loginMiddleware, async (req, res) => {
 refundRouter.get("/:id", loginMiddleware, async (req, res) => {
   const {id} = req.params;
   const refund = await refundRepository.getRefundById(id);
-  if (refund.refunderId !== req.user) {
-    return res.status(403).send("You are not allowed to see this refund");
-  }
   if (!refund) {
     return res.status(404).send("Refund not found");
+  }
+  if (refund.refunderId !== req.user) {
+    return res.status(403).send("You are not allowed to see this refund");
   }
   return res.status(200).json(refund);
 });
