@@ -1,24 +1,27 @@
-import {GroupModel} from "../models/GroupModel.js";
-import {RefundModel} from "../models/RefundModel.js";
+import { GroupModel } from "../models/GroupModel.js";
+import { RefundModel } from "../models/RefundModel.js";
 
 class GroupRepository {
   async getGroups() {
-    return GroupModel.find({}, {
-      name: true,
-      members: true,
-      description: true
-    });
+    return GroupModel.find(
+      {},
+      {
+        name: true,
+        members: true,
+        description: true,
+      },
+    );
   }
 
   async getGroupById(id) {
-    return GroupModel.findById(id);
+    return GroupModel.findById(id).populate("members");
   }
 
   async getGroupsByUser(idUser) {
     return GroupModel.find({
       members: {
-        $in: [idUser]
-      }
+        $in: [idUser],
+      },
     }).populate("members");
   }
 
@@ -29,56 +32,56 @@ class GroupRepository {
   async updateGroup(id, payload) {
     return GroupModel.findOneAndUpdate(
       {
-        _id: id
+        _id: id,
       },
-      payload
+      payload,
     );
   }
 
   async addUserToGroup(id, idUser) {
     return GroupModel.findOneAndUpdate(
       {
-        _id: id
+        _id: id,
       },
       {
         $push: {
-          members: idUser
-        }
+          members: idUser,
+        },
       },
       {
-        new: true
-      }
+        new: true,
+      },
     );
   }
 
-
   async removeUserFromGroup(id, idUser) {
-    const userWithRefundNotPaid = await RefundModel.find({refunder: idUser, isRefunded: false});
+    const userWithRefundNotPaid = await RefundModel.find({
+      refunder: idUser,
+      isRefunded: false,
+    });
     if (userWithRefundNotPaid.length > 0) {
       return "User still has refund to pay";
     }
     const groupWithoutMember = await GroupModel.findOneAndUpdate(
       {
-        _id: id
+        _id: id,
       },
       {
         $pull: {
-          members: idUser
-
-        }
+          members: idUser,
+        },
       },
       {
-        new: true
-      }
+        new: true,
+      },
     );
     if (groupWithoutMember.members.length === 0) {
       await GroupModel.deleteOne({
-        _id: id
+        _id: id,
       });
     }
     return groupWithoutMember;
   }
-
 }
 
 export default new GroupRepository();
