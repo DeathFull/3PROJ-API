@@ -113,7 +113,7 @@ groupRouter.get("/export/:groupId", async (req, res) => {
       .populate("idUser")
       .exec();
 
-    const refunds = await RefundModel.find({ "expenseId.idGroup": groupId })
+    const refunds = await RefundModel.find({ idGroup: groupId })
       .populate("refunderId")
       .exec();
 

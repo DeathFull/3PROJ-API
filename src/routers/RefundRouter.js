@@ -1,6 +1,6 @@
 import express from "express";
 import refundRepository from "../repositories/RefundRepository.js";
-import {loginMiddleware} from "../middlewares/loginMiddleware.js";
+import { loginMiddleware } from "../middlewares/loginMiddleware.js";
 
 const refundRouter = express.Router();
 
@@ -10,7 +10,7 @@ refundRouter.get("/", loginMiddleware, async (req, res) => {
 });
 
 refundRouter.get("/:id", loginMiddleware, async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const refund = await refundRepository.getRefundById(id);
   if (!refund) {
     return res.status(404).send("Refund not found");
@@ -38,7 +38,7 @@ refundRouter.get("/payer/:idUser", loginMiddleware, async (req, res) => {
 });
 
 refundRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
-  const {idGroup} = req.params;
+  const { idGroup } = req.params;
   const refunds = await refundRepository.getRefundsByGroup(idGroup);
   if (!refunds) {
     return res.status(404).send("Refunds not found");
@@ -55,20 +55,8 @@ refundRouter.post("/", loginMiddleware, async (req, res) => {
   }
 });
 
-refundRouter.put("/:idGroup", loginMiddleware, async (req, res) => {
-  try {
-    const {idGroup} = req.params;
-    const payerId = req.user;
-    const {refunderId} = req.body;
-    await refundRepository.updateRefund(idGroup, payerId, refunderId, req.body);
-    return res.status(200).send("Refund updated");
-  } catch (e) {
-    return res.status(400).send(e);
-  }
-});
-
 refundRouter.delete("/:id", loginMiddleware, async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   if ((await refundRepository.getRefundById(id)).refunderId !== req.user) {
     return res.status(403).send("You are not allowed to delete this refund");
   }
