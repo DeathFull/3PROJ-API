@@ -4,6 +4,7 @@ import balanceRepository from "../repositories/BalanceRepository.js";
 import {loginMiddleware} from "../middlewares/loginMiddleware.js";
 import groupRepository from "../repositories/GroupRepository.js";
 import {z} from "zod";
+import debtRepository from "../repositories/DebtRepository.js";
 
 const expenseRouter = express.Router();
 
@@ -69,6 +70,7 @@ expenseRouter.post("/", loginMiddleware, async (req, res) => {
     if (expense) {
       await balanceRepository.updateBalanceByUserAndGroup(expense.idUser, expense.idGroup, expense.amount);
     }
+    await debtRepository.debtBalancing(expense.idGroup);
     return res.status(201).json(expense);
   } catch (e) {
     return res.status(400).send(e);
