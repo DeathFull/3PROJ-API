@@ -8,7 +8,7 @@ class DebtRepository {
   }
 
   async getDebtsByGroup(idGroup) {
-    return DebtModel.find({idGroup: idGroup}).populate("idGroup");
+    return DebtModel.find({idGroup: idGroup}).populate("idGroup").populate("refunderId").populate("receiverId");
   }
 
   async getDebtByRefunder(refunderId) {
