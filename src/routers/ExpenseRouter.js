@@ -22,18 +22,6 @@ expenseRouter.get("/", loginMiddleware, async (req, res) => {
   return res.status(200).json(expenses);
 });
 
-expenseRouter.get("/:id", loginMiddleware, async (req, res) => {
-  const {id} = req.params;
-  if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false) {
-    return res.status(403).send("You are not allowed to see this expense");
-  }
-  const expense = await expenseRepository.getExpenseById(id);
-  if (!expense) {
-    return res.status(404).send("Expense not found");
-  }
-  return res.status(200).json(expense);
-});
-
 expenseRouter.get("/user", loginMiddleware, async (req, res) => {
   const {sortBy, orderBy} = req.query;
   const expenses = await expenseRepository.getExpensesByUser(req.user, sortBy, orderBy);
@@ -41,6 +29,18 @@ expenseRouter.get("/user", loginMiddleware, async (req, res) => {
     return res.status(404).send("Expenses not found");
   }
   return res.status(200).json(expenses);
+});
+
+expenseRouter.get("/:id", loginMiddleware, async (req, res) => {
+  const {id} = req.params;
+  /*if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false) {
+    return res.status(403).send("You are not allowed to see this expense");
+  }*/
+  const expense = await expenseRepository.getExpenseById(id);
+  if (!expense) {
+    return res.status(404).send("Expense not found");
+  }
+  return res.status(200).json(expense);
 });
 
 expenseRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {

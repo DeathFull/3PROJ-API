@@ -16,6 +16,14 @@ balanceRouter.get("/", loginMiddleware, async (req, res) => {
   return res.status(200).json(balances);
 })
 
+balanceRouter.get("/user", loginMiddleware, async (req, res) => {
+  const balances = await balanceRepository.getBalancesByUser(req.user);
+  if (!balances) {
+    return res.status(404).send("Balances not found");
+  }
+  return res.status(200).json(balances);
+})
+
 balanceRouter.get("/:id", loginMiddleware, async (req, res) => {
   const {id} = req.params;
   const balance = await balanceRepository.getBalanceById(id)
@@ -26,15 +34,6 @@ balanceRouter.get("/:id", loginMiddleware, async (req, res) => {
     return res.status(403).send("You are not allowed to see this balance");
   }
   return res.status(200).json(balance);
-})
-
-
-balanceRouter.get("/user", loginMiddleware, async (req, res) => {
-  const balances = await balanceRepository.getBalancesByUser(req.user);
-  if (!balances) {
-    return res.status(404).send("Balances not found");
-  }
-  return res.status(200).json(balances);
 })
 
 balanceRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
