@@ -115,6 +115,7 @@ groupRouter.get("/export/:groupId", async (req, res) => {
 
     const refunds = await RefundModel.find({ idGroup: groupId })
       .populate("refunderId")
+      .populate("payerId")
       .exec();
 
     if (format === "pdf") {
