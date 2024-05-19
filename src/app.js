@@ -15,6 +15,7 @@ import UserRepository from "./repositories/UserRepository.js";
 import dotenv from "dotenv";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import MongoStore from "connect-mongo";
+import debtRouter from "./routers/DebtRouter.js";
 
 const app = express();
 dotenv.config();
@@ -131,6 +132,7 @@ app.use("/groups", groupRouter);
 app.use("/balances", balanceRouter);
 app.use("/expenses", expenseRouter);
 app.use("/refunds", refundRouter);
+app.use("/debts", debtRouter);
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 export default app;
