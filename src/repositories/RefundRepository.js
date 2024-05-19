@@ -30,12 +30,13 @@ class RefundRepository {
   }
 
   async updateRefund(idGroup, idPayer, idRefunder, payload) {
+    const roundedAmount = Math.round(payload.amount * 100) / 100;
     return RefundModel.findOneAndUpdate({
         payerId: idPayer,
         idGroup: idGroup,
         refunderId: idRefunder
       },
-      {$inc: {amount: payload.amount}},
+      {$inc: {amount: roundedAmount}},
       {new: true, upsert: true}).populate("payerId").populate("refunderId").populate("idGroup").exec();
   }
 

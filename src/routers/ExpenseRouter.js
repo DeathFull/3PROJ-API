@@ -43,8 +43,8 @@ expenseRouter.get("/:id", loginMiddleware, async (req, res) => {
 
 expenseRouter.get("/group/:idGroup", loginMiddleware, async (req, res) => {
   const {idGroup} = req.params;
-  if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false) {
-    return res.status(403).send("You are not allowed to see this expense");
+  if (!(await groupRepository.getGroupById(idGroup)).members.some(member => member._id.toString() === req.user)){
+    return res.status(403).send("You are not allowed to see this balance");
   }
   const expenses = await expenseRepository.getExpensesByGroup(idGroup);
   if (!expenses) {
