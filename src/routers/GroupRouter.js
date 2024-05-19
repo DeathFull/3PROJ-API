@@ -12,7 +12,7 @@ groupRouter.get("/", loginMiddleware, async (req, res) => {
 
 groupRouter.get("/:id", loginMiddleware, async (req, res) => {
   const {id} = req.params;
-
+  console.log(id);
   const group = await groupRepository.getGroupById(id);
   if (!group) {
     return res.status(404).send("Group not found");
