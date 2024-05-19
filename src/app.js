@@ -39,8 +39,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session({}));
 passport.use(UserModel.createStrategy());
-/*passport.serializeUser(UserModel.serializeUser());
-passport.deserializeUser(UserModel.deserializeUser());*/
 passport.serializeUser((user, done) => {
   done(null, user._id);
 });
@@ -99,7 +97,7 @@ passport.use(
         process.env.NODE_ENV === "PRODUCTION"
           ? "https://api.uni-finance.fr/users/login/facebook/callback"
           : "http://localhost:3000/users/login/facebook/callback",
-      profileFields: ["id", "emails", "name"], // Ajoutez cette ligne
+      profileFields: ["id", "emails", "name"],
     },
     async function (accessToken, refreshToken, profile, cb) {
       try {

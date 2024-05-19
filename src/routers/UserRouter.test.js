@@ -20,7 +20,6 @@ function userTest() {
 
   test("GET /users/:id with valid id and id not found", async ({ expect }) => {
     const res = await req.get(`/users/${new Types.ObjectId().toString()}`);
-    console.log(res);
     expect(res.status).toBe(404);
   });
 }

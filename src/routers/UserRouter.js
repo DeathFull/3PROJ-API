@@ -24,7 +24,7 @@ const containerName = "images";
 const UserRegisterSchema = z.object({
   firstname: z.string(),
   lastname: z.string(),
-  email: z.string().email(), // username: z.string(),
+  email: z.string().email(),
   password: z.string().min(6),
 });
 
@@ -70,26 +70,15 @@ userRouter.get("/:id", async (req, res) => {
   return res.status(200).json(user);
 });
 
-// TODO: À méditer
-userRouter.get("/:id/groups", async (req, res) => {
-  const { id } = req.params;
-  const groups = await groupRepository.getGroupsByUser(id);
-  if (!groups) {
-    return res.status(404).send("Groups not found");
-  }
-  return res.status(200).json(groups);
-});
-
 userRouter.post("/register", async (req, res) => {
   let validation;
   try {
     validation = UserRegisterSchema.parse(req.body);
 
-    console.log(validation);
 
-    const { firstname, lastname, email, /*username,*/ password } = validation;
+    const { firstname, lastname, email, password } = validation;
     UserModel.register(
-      new UserModel({ firstname, lastname, email /*username*/ }),
+      new UserModel({ firstname, lastname, email }),
       password,
       (err, user) => {
         if (err) {

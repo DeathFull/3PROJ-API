@@ -37,11 +37,9 @@ class DebtRepository {
     const debts = await DebtModel.find({idGroup: idGroup});
     for (let i = 0; i < debts.length; i++) {
       const debt1 = debts[i];
-      // console.log(debt1)
 
       const matchingDebt = debts.filter(debt2 => debt2.receiverId.equals(debt1.refunderId) && debt2.refunderId.equals(debt1.receiverId));
       if (matchingDebt.length > 0) {
-        console.log(matchingDebt[0])
         const v = Math.min(debt1.amount, matchingDebt[0].amount);
         debt1.amount -= v;
         matchingDebt[0].amount -= v;
