@@ -24,9 +24,9 @@ expenseRouter.get("/", loginMiddleware, async (req, res) => {
 
 expenseRouter.get("/:id", loginMiddleware, async (req, res) => {
   const {id} = req.params;
-  if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false) {
+  /*if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false) {
     return res.status(403).send("You are not allowed to see this expense");
-  }
+  }*/
   const expense = await expenseRepository.getExpenseById(id);
   if (!expense) {
     return res.status(404).send("Expense not found");
