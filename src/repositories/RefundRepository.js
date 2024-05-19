@@ -18,7 +18,7 @@ class RefundRepository {
   }
 
   async getRefundsByGroup(idGroup) {
-    return RefundModel.find({idGroup}).populate("idGroup");
+    return RefundModel.find({idGroup}).populate("idGroup").populate("payerId").populate("refunderId");
   }
 
   async getRefundByGroupPayerRefunder(idGroup, idPayer, idRefunder) {
