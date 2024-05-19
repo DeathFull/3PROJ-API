@@ -33,9 +33,7 @@ expenseRouter.get("/user", loginMiddleware, async (req, res) => {
 
 expenseRouter.get("/:id", loginMiddleware, async (req, res) => {
   const {id} = req.params;
-  /*if ((await groupRepository.getGroupById(idGroup)).members.includes(req.user) === false) {
-    return res.status(403).send("You are not allowed to see this expense");
-  }*/
+
   const expense = await expenseRepository.getExpenseById(id);
   if (!expense) {
     return res.status(404).send("Expense not found");
@@ -66,9 +64,6 @@ expenseRouter.get("/category/:category", loginMiddleware, async (req, res) => {
 
 expenseRouter.post("/", loginMiddleware, async (req, res) => {
   try {
-    /*if (req.body.idUser !== req.user) {
-      return res.status(403).send("You are not allowed to create an expense for another user");
-    }*/
     const expenseData = {idUser: req.user, ...ExpenseSchema.parse(req.body)}
     const expense = await expenseRepository.createExpense(expenseData);
     if (expense) {

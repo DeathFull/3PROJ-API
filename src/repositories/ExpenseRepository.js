@@ -24,7 +24,6 @@ class ExpenseRepository {
   }
 
   async getExpensesByGroup(idGroup) {
-    // const sortOptions = [[sortBy, Number(order)]];
     return ExpenseModel.find({idGroup: idGroup}).populate("idUser").populate("idGroup");
   }
 
