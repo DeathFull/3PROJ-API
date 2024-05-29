@@ -1,11 +1,11 @@
 import express from "express";
 import groupRepository from "../repositories/GroupRepository.js";
 import userRepository from "../repositories/UserRepository.js";
-import { loginMiddleware } from "../middlewares/loginMiddleware.js";
-import { ExpenseModel } from "../models/ExpenseModel.js";
+import {loginMiddleware} from "../middlewares/loginMiddleware.js";
+import {ExpenseModel} from "../models/ExpenseModel.js";
 import PDFDocument from "pdfkit";
-import { RefundModel } from "../models/RefundModel.js";
-import { Parser } from "json2csv";
+import {RefundModel} from "../models/RefundModel.js";
+import {Parser} from "json2csv";
 
 const groupRouter = express.Router();
 
@@ -15,7 +15,7 @@ groupRouter.get("/", loginMiddleware, async (req, res) => {
 });
 
 groupRouter.get("/:id", loginMiddleware, async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const group = await groupRepository.getGroupById(id);
   if (!group) {
     return res.status(404).send("Group not found");
@@ -24,7 +24,7 @@ groupRouter.get("/:id", loginMiddleware, async (req, res) => {
 });
 
 groupRouter.get("/:id/users", loginMiddleware, async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const group = await groupRepository.getGroupById(id);
   if (group.includes(req.user) === true) {
     const users = await userRepository.getUsersByGroup(id, group);
@@ -52,8 +52,8 @@ groupRouter.post("/", loginMiddleware, async (req, res) => {
 
 groupRouter.put("/:id", loginMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
-    const groupToUpdate = await groupRepository.getGroupById(id);
+    const {id} = req.params;
+    const groupToUpdate = await groupRepository.getGroupByIdWithoutPopulate(id);
     if (groupToUpdate.members.includes(req.user) === false) {
       return res.status(403).send("You are not allowed to update this group");
     }
@@ -69,9 +69,9 @@ groupRouter.put("/:id", loginMiddleware, async (req, res) => {
 
 groupRouter.put("/:id/addUser", loginMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
-    const { idUser } = req.body;
-    const groupToUpdate = await groupRepository.getGroupById(id);
+    const {id} = req.params;
+    const {idUser} = req.body;
+    const groupToUpdate = await groupRepository.getGroupByIdWithoutPopulate(id);
     if (groupToUpdate.members.includes(req.user) === false) {
       return res
         .status(403)
@@ -92,7 +92,7 @@ groupRouter.put("/:id/addUser", loginMiddleware, async (req, res) => {
 
 groupRouter.put("/:id/removeUser", loginMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {id} = req.params;
     const groupToUpdate = await groupRepository.getGroupById(id);
     if (!groupToUpdate) {
       return res.status(404).send("Group not found");
@@ -105,15 +105,15 @@ groupRouter.put("/:id/removeUser", loginMiddleware, async (req, res) => {
 });
 
 groupRouter.get("/export/:groupId", async (req, res) => {
-  const { groupId } = req.params;
-  const { format } = req.query; // format can be 'pdf' or 'csv'
+  const {groupId} = req.params;
+  const {format} = req.query; // format can be 'pdf' or 'csv'
 
   try {
-    const expenses = await ExpenseModel.find({ idGroup: groupId })
+    const expenses = await ExpenseModel.find({idGroup: groupId})
       .populate("idUser")
       .exec();
 
-    const refunds = await RefundModel.find({ idGroup: groupId })
+    const refunds = await RefundModel.find({idGroup: groupId})
       .populate("refunderId")
       .populate("payerId")
       .exec();

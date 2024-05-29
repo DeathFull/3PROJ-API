@@ -17,6 +17,10 @@ class GroupRepository {
     return GroupModel.findById(id).populate("members");
   }
 
+  async getGroupByIdWithoutPopulate(id) {
+    return GroupModel.findById(id);
+  }
+
   async getGroupsByUser(idUser) {
     return GroupModel.find({
       members: {
