@@ -31,8 +31,7 @@ debtRouter.post("/", async (req, res) => {
 
 debtRouter.put("/:idGroup", loginMiddleware, async (req, res) => {
   const {idGroup} = req.params;
-  const receiverId = req.user;
-  const {refunderId} = req.body;
+  const {refunderId, receiverId} = req.body;
   const debts = await debtRepository.updateDebt(idGroup, refunderId, receiverId, req.body);
   if (!debts) {
     return res.status(404).send("Debts not found");
