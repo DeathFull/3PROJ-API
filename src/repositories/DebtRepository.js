@@ -70,11 +70,11 @@ class DebtRepository {
 
     await Promise.all(Array.from(debtsToSave).map(debt => debt.save()));
   }
-  async debtBalancing2(idGroup) {
-    const debts = DebtModel.find({idGroup: idGroup});
 
-    for (let i = 0; i < debts.length; i++) {
-      const debt1 = debts[i];
+  async debtBalancing2(idGroup) {
+    const debts = await DebtModel.find({idGroup: idGroup}).exec();
+
+    debts.forEach(debt1 => {
       const matchingDebt = debts.filter(debt2 => debt2.receiverId.equals(debt1.refunderId) && debt2.refunderId.equals(debt1.receiverId));
 
       if (matchingDebt.length > 0) {
@@ -82,6 +82,13 @@ class DebtRepository {
         debt1.amount -= v;
         matchingDebt[0].amount -= v;
       }
+      console.log("debt1", debt1);
+      console.log("matchingDebt", matchingDebt);
+    });
+
+    // Sauvegarder les modifications
+    for (let i = 0; i < debts.length; i++) {
+      await debts[i].save();
     }
   }
 }
