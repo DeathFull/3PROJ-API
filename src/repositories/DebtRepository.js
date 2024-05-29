@@ -28,8 +28,8 @@ class DebtRepository {
     console.log("roundedAmount", roundedAmount)
     return DebtModel.findOneAndUpdate({
         idGroup: idGroup,
-        refunderId: refunderId,
-        receiverId: receiverId
+        refunderId: receiverId,
+        receiverId: refunderId
       },
       {$inc: {amount: roundedAmount}},
       {new: true, upsert: true})
