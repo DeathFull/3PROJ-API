@@ -6,6 +6,7 @@ import {ExpenseModel} from "../models/ExpenseModel.js";
 import PDFDocument from "pdfkit";
 import {RefundModel} from "../models/RefundModel.js";
 import {Parser} from "json2csv";
+import debtRepository from "../repositories/DebtRepository.js";
 
 const groupRouter = express.Router();
 
@@ -44,6 +45,13 @@ groupRouter.post("/", loginMiddleware, async (req, res) => {
         .send("You are not allowed to create a group without yourself");
     }
     const group = await groupRepository.createGroup(req.body);
+    for (const member of req.body.members) {
+      for (const member2 of req.body.members) {
+        if (member !== member2) {
+          await debtRepository.updateDebt(group._id, member, member2, {amount: 0})
+        }
+      }
+    }
     return res.status(201).json(group);
   } catch (e) {
     return res.status(400).send(e);
@@ -84,6 +92,12 @@ groupRouter.put("/:id/addUser", loginMiddleware, async (req, res) => {
       return res.status(400).send("User is already in the group");
     }
     await groupRepository.addUserToGroup(id, idUser);
+    for (const member of groupToUpdate.members) {
+      if (member !== idUser) {
+        await debtRepository.updateDebt(groupToUpdate._id, member, idUser, {amount: 0})
+        await debtRepository.updateDebt(groupToUpdate._id, idUser, member, {amount: 0})
+      }
+    }
     return res.status(200).send("User added to group");
   } catch (e) {
     return res.status(400).send(e);

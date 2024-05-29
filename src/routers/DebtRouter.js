@@ -37,7 +37,7 @@ debtRouter.put("/:idGroup", loginMiddleware, async (req, res) => {
   if (!debts) {
     return res.status(404).send("Debts not found");
   }
-  // await debtRepository.debtBalancing(idGroup);
+  await debtRepository.debtBalancing(idGroup);
   return res.status(200).json(debts);
 });
 

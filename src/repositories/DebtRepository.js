@@ -25,6 +25,7 @@ class DebtRepository {
 
   async updateDebt(idGroup, refunderId, receiverId, payload) {
     const roundedAmount = Math.round(payload.amount * 100) / 100;
+    console.log("roundedAmount",roundedAmount)
     return DebtModel.findOneAndUpdate({
         idGroup: idGroup,
         refunderId: refunderId,
