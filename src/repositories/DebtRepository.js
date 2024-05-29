@@ -25,7 +25,7 @@ class DebtRepository {
 
   async updateDebt(idGroup, refunderId, receiverId, payload) {
     const roundedAmount = Math.round(payload.amount * 100) / 100;
-    console.log("roundedAmount",roundedAmount)
+    console.log("roundedAmount", roundedAmount)
     return DebtModel.findOneAndUpdate({
         idGroup: idGroup,
         refunderId: refunderId,
@@ -36,7 +36,7 @@ class DebtRepository {
   }
 
   async debtBalancing(idGroup) {
-    const debts = await DebtModel.find({ idGroup: idGroup });
+    const debts = await DebtModel.find({idGroup: idGroup});
     const debtMap = new Map();
     const debtsToSave = new Set();
 
@@ -55,6 +55,7 @@ class DebtRepository {
       ];
 
       const matchingDebts = keys.flatMap(key => debtMap.get(key) || []);
+      console.log("matchingDebts", matchingDebts)
 
       if (matchingDebts.length > 0) {
         const v = Math.min(debt.amount, ...matchingDebts.map(d => d.amount));
@@ -68,6 +69,20 @@ class DebtRepository {
     });
 
     await Promise.all(Array.from(debtsToSave).map(debt => debt.save()));
+  }
+  async debtBalancing2(idGroup) {
+    const debts = DebtModel.find({idGroup: idGroup});
+
+    for (let i = 0; i < debts.length; i++) {
+      const debt = debts[i];
+      const matchingDebt = debts.filter(debt2 => debt2.receiverId.equals(debt1.refunderId) && debt2.refunderId.equals(debt1.receiverId));
+
+      if (matchingDebt.length > 0) {
+        const v = Math.min(debt.amount, matchingDebt[0].amount);
+        debt.amount -= v;
+        matchingDebt[0].amount -= v;
+      }
+    }
   }
 }
 

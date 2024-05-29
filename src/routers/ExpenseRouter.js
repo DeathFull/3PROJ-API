@@ -70,7 +70,7 @@ expenseRouter.post("/", loginMiddleware, async (req, res) => {
     if (expense) {
       await balanceRepository.updateBalanceByUserAndGroup(expense.idUser, expense.idGroup, expense.amount);
     }
-    await debtRepository.debtBalancing(expense.idGroup);
+    await debtRepository.debtBalancing2(expense.idGroup);
     return res.status(201).json(expense);
   } catch (e) {
     return res.status(400).send(e);
